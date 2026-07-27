@@ -19,6 +19,22 @@ Each section lives in its own file under [`sections/`](./sections) for quick too
 | 7 | [Physics Reference](./sections/07-physics-reference.md) | The "why" behind the specs (p-n junction, bandgap, recombination, PID) |
 | 8 | [Terminology Index](./sections/08-terminology-index.md) | Quick-lookup glossary of acronyms and terms |
 
+## Quoting engine
+
+The knowledge bank isn't just reference text — §1–§3 are encoded into a working
+**enquiry-to-quote tool**, the `accacia` Python package (pure standard library,
+tested). It turns the KB's "required inputs from any enquiry" into a capacity
+derivation, a spec recommendation, and a full CAPEX/RESCO financial model
+(payback, LCOE, IRR, NPV).
+
+```bash
+python -m accacia --area 20000 --location Ahmedabad --load 250 \
+    --climate hot --payback-focused
+```
+
+See **[docs/quoting-engine.md](./docs/quoting-engine.md)** for the CLI reference,
+library API, and modelling notes.
+
 ## Scope & intent
 
 This is a working reference for scoping enquiries, selecting product/spec tiers, building
