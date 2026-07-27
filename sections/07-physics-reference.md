@@ -8,4 +8,4 @@
 - **Temperature coefficient** — physical basis for why HJT/hot-climate matching matters
 - **PID mechanism** — stray leakage voltage across the module frame/encapsulation gradually disturbs the same junction field, causing slow output decline — this is why MQT21 exists
 
-> These mechanisms justify the spec calls in [§2 Product/Spec Selection](./02-product-spec-selection.md) and the test tiers in [§5 Certification & Differentiation Tiers](./05-certification-tiers.md).
+> These mechanisms justify the spec calls in [Section 2 Product/Spec Selection](./02-product-spec-selection.md) and the test tiers in [Section 5 Certification & Differentiation Tiers](./05-certification-tiers.md).

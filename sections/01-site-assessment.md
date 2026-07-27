@@ -48,6 +48,6 @@ CUF (%) = Generation ÷ (Capacity × 8760) × 100
     - Kerala/Kochi: ~4.95
     - West Bengal/Kolkata: ~4.85
     - Assam/Guwahati (NE, cloudy): ~4.6
-  - **GCC**: Dubai/UAE 5.5–5.9, Abu Dhabi ~5.75, Sharjah ~5.7 (high, but check thermal derate — see [§3 Financial Model](./03-financial-model.md) and [§2 Product/Spec Selection](./02-product-spec-selection.md))
+  - **GCC**: Dubai/UAE 5.5–5.9, Abu Dhabi ~5.75, Sharjah ~5.7 (high, but check thermal derate — see [Section 3 Financial Model](./03-financial-model.md) and [Section 2 Product/Spec Selection](./02-product-spec-selection.md))
 - PR benchmark: 75% (below-average install) / 80% (standard good EPC) / 85%+ (premium, well-monitored)
 - Degradation: 2–2.5% year-1 dip, then 0.4–0.5%/year for silicon; HJT trends toward the lower end (~0.3–0.4%/yr)

@@ -3,9 +3,9 @@
 Turns a C&I rooftop solar enquiry into a spec recommendation and a financial
 model, encoding the logic from the Solar EPC Knowledge Bank (see ``sections/``):
 
-- ``site``    — §1 capacity derivation and generation/CUF
-- ``specs``   — §2 cell-technology decision matrix
-- ``finance`` — §3 CAPEX / RESCO models, LCOE, IRR, NPV
+- ``site``    — Section 1 capacity derivation and generation/CUF
+- ``specs``   — Section 2 cell-technology decision matrix
+- ``finance`` — Section 3 CAPEX / RESCO models, LCOE, IRR, NPV
 - ``quote``   — orchestrates an enquiry into a full quote
 
 All figures reflect India, 2026 defaults. Verify tariffs, ALMM/DISCOM rules,

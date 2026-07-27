@@ -8,7 +8,7 @@ GCC/Dubai layer).
 
 Each section lives in its own file under [`sections/`](./sections) for quick tool-lookup.
 
-| § | Section | What it covers |
+| Section | Section | What it covers |
 |---|---|---|
 | 1 | [Site Assessment](./sections/01-site-assessment.md) | Required enquiry inputs, capacity derivation, generation/CUF formulas, PSH by region |
 | 2 | [Product/Spec Selection](./sections/02-product-spec-selection.md) | Cell-technology decision matrix (PERC/TOPCon/HJT/IBC), default-quote rule, physics-to-spec cheat sheet |
@@ -24,9 +24,9 @@ Each section lives in its own file under [`sections/`](./sections) for quick too
 The knowledge bank isn't just reference text — most of it is encoded into a
 working **enquiry-to-quote tool**, the `accacia` Python package (pure standard
 library, tested). It turns the KB's "required inputs from any enquiry" into a
-capacity derivation (§1), a spec recommendation (§2), a full CAPEX/RESCO
-financial model (§3 — payback, LCOE, IRR, NPV), a bill of quantities (§6), plus
-structuring (§4) and vendor-shortlisting (§5) helpers.
+capacity derivation (Section 1), a spec recommendation (Section 2), a full CAPEX/RESCO
+financial model (Section 3 — payback, LCOE, IRR, NPV), a bill of quantities (Section 6), plus
+structuring (Section 4) and vendor-shortlisting (Section 5) helpers.
 
 ```bash
 python -m accacia --area 20000 --location Ahmedabad --load 250 \

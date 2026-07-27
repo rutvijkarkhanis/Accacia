@@ -1,4 +1,4 @@
-"""§6 BOQ Structure — bill of quantities from a sized, priced plant.
+"""Section 6 BOQ Structure — bill of quantities from a sized, priced plant.
 
 Encodes the 9-line BOQ template and the typical cost split from
 ``sections/06-boq-template.md``. Given a capacity and total CAPEX, it allocates
@@ -12,7 +12,7 @@ from dataclasses import dataclass, field, asdict
 from math import ceil
 from typing import Any
 
-# Cost split (§6). Modules 55–60%, inverters 10–12%, BOS/structure 15–18%,
+# Cost split (Section 6). Modules 55–60%, inverters 10–12%, BOS/structure 15–18%,
 # cabling/civil/testing = remainder. Midpoints chosen; the six "remainder"
 # lines sum to the leftover 15%. Percentages sum to 1.0 (asserted below).
 COST_SPLIT: dict[str, float] = {
@@ -91,9 +91,9 @@ def build_boq(
     inverter_kw: float = DEFAULT_INVERTER_KW,
     dc_ac_ratio: float = DEFAULT_DC_AC_RATIO,
 ) -> BOQ:
-    """Build a §6 bill of quantities for a sized, priced plant.
+    """Build a Section 6 bill of quantities for a sized, priced plant.
 
-    ``cell_tech`` / ``bom`` come from the §2 spec recommendation and describe
+    ``cell_tech`` / ``bom`` come from the Section 2 spec recommendation and describe
     the module line; the rest of the plant is standard BOS. Costs are allocated
     from ``capex`` via ``COST_SPLIT``.
     """
@@ -115,7 +115,7 @@ def build_boq(
         "performance warranty"
     )
 
-    # Per-line spec text (§6 template) and countable quantities where meaningful.
+    # Per-line spec text (Section 6 template) and countable quantities where meaningful.
     specs: dict[str, tuple[str, float | None, str | None]] = {
         "Modules": (f"{module_wp} Wp — {module_spec}", module_count, "nos"),
         "Inverters": (

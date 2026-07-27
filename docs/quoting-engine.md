@@ -6,12 +6,12 @@ the [Solar EPC Knowledge Bank](../README.md):
 
 | Module | Knowledge Bank section | What it computes |
 |---|---|---|
-| `accacia.site` | [§1 Site Assessment](../sections/01-site-assessment.md) | Usable area → feasible capacity (roof-area vs sanctioned-load bound), year-1 generation, CUF |
-| `accacia.specs` | [§2 Product/Spec Selection](../sections/02-product-spec-selection.md) | Cell-technology decision matrix as a priority-ordered rule engine |
-| `accacia.finance` | [§3 Financial Model](../sections/03-financial-model.md) | CAPEX & RESCO year-by-year models, payback, LCOE, IRR, NPV |
-| `accacia.regulatory` | [§4 Regulatory & Commercial](../sections/04-regulatory-commercial.md) | Grid-connection selector, CAPEX-vs-RESCO selector, PPA clauses, India/GCC compliance checklists |
-| `accacia.boq` | [§6 BOQ Structure](../sections/06-boq-template.md) | 9-line bill of quantities: cost split, module/inverter counts, per-line specs |
-| `accacia.vendors` | [§5 Certification & Differentiation](../sections/05-certification-tiers.md) | PVEL 2026 vendor shortlisting and ranking |
+| `accacia.site` | [Section 1 Site Assessment](../sections/01-site-assessment.md) | Usable area → feasible capacity (roof-area vs sanctioned-load bound), year-1 generation, CUF |
+| `accacia.specs` | [Section 2 Product/Spec Selection](../sections/02-product-spec-selection.md) | Cell-technology decision matrix as a priority-ordered rule engine |
+| `accacia.finance` | [Section 3 Financial Model](../sections/03-financial-model.md) | CAPEX & RESCO year-by-year models, payback, LCOE, IRR, NPV |
+| `accacia.regulatory` | [Section 4 Regulatory & Commercial](../sections/04-regulatory-commercial.md) | Grid-connection selector, CAPEX-vs-RESCO selector, PPA clauses, India/GCC compliance checklists |
+| `accacia.boq` | [Section 6 BOQ Structure](../sections/06-boq-template.md) | 9-line bill of quantities: cost split, module/inverter counts, per-line specs |
+| `accacia.vendors` | [Section 5 Certification & Differentiation](../sections/05-certification-tiers.md) | PVEL 2026 vendor shortlisting and ranking |
 | `accacia.quote` | — | Orchestrates site/spec/finance/BOQ into one `Quote` |
 
 A browser front-end that mirrors this logic (no install, no CLI) lives at
@@ -39,19 +39,19 @@ pytest
 
 | Flag | Maps to | Default |
 |---|---|---|
-| `--area` (required) | §1 roof/land area (sqft) | — |
-| `--location` / `--psh` | §1 PSH (region lookup or explicit) | one required |
-| `--pr` | §1 performance ratio | 0.80 (good-EPC benchmark) |
-| `--load` | §1 sanctioned load (kVA) — DISCOM capacity cross-check | none |
-| `--shading-loss`, `--area-per-kwp`, `--capacity` | §1 overrides | 0.08, 100, — |
-| `--climate {hot,moderate,cool}` and spec flags | §2 decision matrix | moderate |
-| `--cost-per-watt`, `--grid-tariff`, `--tariff-escalation`, `--tenure`, `--discount-rate` | §3 assumptions | India-2026 midpoints |
-| `--module-wp`, `--inverter-kw`, `--dc-ac-ratio` | §6 BOQ sizing | 580 Wp, 100 kW, 1.2 |
+| `--area` (required) | Section 1 roof/land area (sqft) | — |
+| `--location` / `--psh` | Section 1 PSH (region lookup or explicit) | one required |
+| `--pr` | Section 1 performance ratio | 0.80 (good-EPC benchmark) |
+| `--load` | Section 1 sanctioned load (kVA) — DISCOM capacity cross-check | none |
+| `--shading-loss`, `--area-per-kwp`, `--capacity` | Section 1 overrides | 0.08, 100, — |
+| `--climate {hot,moderate,cool}` and spec flags | Section 2 decision matrix | moderate |
+| `--cost-per-watt`, `--grid-tariff`, `--tariff-escalation`, `--tenure`, `--discount-rate` | Section 3 assumptions | India-2026 midpoints |
+| `--module-wp`, `--inverter-kw`, `--dc-ac-ratio` | Section 6 BOQ sizing | 580 Wp, 100 kW, 1.2 |
 | `--json`, `--schedule`, `--boq` | output format | text summary |
 
 Spec flags: `--reflective-mount`, `--space-constrained`, `--aesthetic`,
 `--long-hold`, `--payback-focused`, `--budget-sensitive`. They resolve in the
-priority order of the §2 matrix (a physical constraint outranks a climate match,
+priority order of the Section 2 matrix (a physical constraint outranks a climate match,
 which outranks a cost preference); with none set, the KB base-case rule fires.
 
 ## Library
@@ -70,7 +70,7 @@ print(quote.summary())
 quote.to_dict()   # JSON-serialisable full quote incl. year-by-year rows
 ```
 
-### §4 structuring & §5 vendor helpers
+### Section 4 structuring & Section 5 vendor helpers
 
 These stand alone from the site→quote pipeline — call them to advise on
 structuring and procurement:
@@ -102,11 +102,11 @@ recommend_vendors(3)                                 # Adani, RenewSys, ReNew (b
 - **IRR** is solved by bisection on the CAPEX cashflows; it returns `None` only
   when no sign change exists (savings never turn positive), and can legitimately
   be negative when savings never recover capex.
-- **BOQ cost allocation** splits total CAPEX across the 9 §6 line items by the
+- **BOQ cost allocation** splits total CAPEX across the 9 Section 6 line items by the
   KB cost-split percentages (modules 57.5%, inverters 11%, BOS 16.5%, the six
   remaining lines share the leftover 15%); the line costs always reconcile to
   CAPEX. Module and inverter counts are derived from `--module-wp` and the
-  `--dc-ac-ratio` / `--inverter-kw`, and the §2 cell-tech recommendation flows
+  `--dc-ac-ratio` / `--inverter-kw`, and the Section 2 cell-tech recommendation flows
   into the module line's spec text.
 - **Defaults** sit at the midpoints of the KB "India, 2026" assumption ranges.
   Override any of them per enquiry — always verify tariffs and ALMM/DISCOM rules

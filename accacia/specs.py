@@ -1,4 +1,4 @@
-"""§2 Product/Spec Selection — cell-technology decision matrix.
+"""Section 2 Product/Spec Selection — cell-technology decision matrix.
 
 Encodes the decision matrix and the cross-cutting default rule from
 ``sections/02-product-spec-selection.md`` as a small priority-ordered rule
@@ -48,7 +48,7 @@ class SiteConditions:
 
 
 def recommend_spec(cond: SiteConditions) -> SpecRecommendation:
-    """Walk the §2 decision matrix in priority order and return the first match.
+    """Walk the Section 2 decision matrix in priority order and return the first match.
 
     Priority order reflects how binding each constraint is: a physical limit
     (space, reflective rear-gain, aesthetics) outranks a climate match, which

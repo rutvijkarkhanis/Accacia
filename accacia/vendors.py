@@ -1,4 +1,4 @@
-"""§5 Vendor shortlisting — PVEL 2026 standing of Indian manufacturers.
+"""Section 5 Vendor shortlisting — PVEL 2026 standing of Indian manufacturers.
 
 Encodes the vendor table and the "diligence question that actually separates
 vendors" from ``sections/05-certification-tiers.md``. Metrics that the KB does
@@ -30,7 +30,7 @@ class Vendor:
         return (d, a, y)
 
 
-# PVEL 2026 standing (§5). Detailed metrics are populated where the KB states
+# PVEL 2026 standing (Section 5). Detailed metrics are populated where the KB states
 # them; breadth-listed vendors carry name-only entries.
 VENDORS: list[Vendor] = [
     Vendor("Adani Solar", 7, 6.5, None, 7, "ASB-M10-144-AAA",
@@ -50,7 +50,7 @@ VENDORS: list[Vendor] = [
     Vendor("Tata Power Solar", None, None, None, None, None),
 ]
 
-# §5 — the question that actually separates vendors at diligence.
+# Section 5 — the question that actually separates vendors at diligence.
 DILIGENCE_QUESTION = (
     "Not 'is it certified' but: which IEC edition, does it include MQT21 (PID), "
     "and can you show the exact model's PVEL category breakdown + EL images for "

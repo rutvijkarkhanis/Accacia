@@ -14,4 +14,4 @@
 
 **Typical cost split:** Modules ~55-60% | Inverters ~10-12% | BOS/structure ~15-18% | Cabling/civil/testing ~remainder
 
-> Line-item spec choices trace back to [§2 Product/Spec Selection](./02-product-spec-selection.md); cost-per-watt ranges feeding the split are in [§3 Financial Model](./03-financial-model.md).
+> Line-item spec choices trace back to [Section 2 Product/Spec Selection](./02-product-spec-selection.md); cost-per-watt ranges feeding the split are in [Section 3 Financial Model](./03-financial-model.md).

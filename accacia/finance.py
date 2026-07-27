@@ -1,4 +1,4 @@
-"""§3 Financial Model — CAPEX / RESCO formula bank, LCOE, IRR, NPV.
+"""Section 3 Financial Model — CAPEX / RESCO formula bank, LCOE, IRR, NPV.
 
 Encodes the formulas from ``sections/03-financial-model.md``. Degradation is
 modelled with a distinct first-year dip and a lower steady-state rate (KB: a

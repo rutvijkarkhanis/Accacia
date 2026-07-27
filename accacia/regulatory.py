@@ -1,4 +1,4 @@
-"""§4 Regulatory & Commercial Structuring — selectors and checklists.
+"""Section 4 Regulatory & Commercial Structuring — selectors and checklists.
 
 Encodes the grid-connection mechanism table, the CAPEX-vs-RESCO commercial
 model selector, and the India/GCC compliance checklists from
@@ -32,7 +32,7 @@ def recommend_grid_connection(
     multiple_consumers: bool = False,
     sell_all_generation: bool = False,
 ) -> Recommendation:
-    """Pick a grid-connection mechanism (§4 table).
+    """Pick a grid-connection mechanism (Section 4 table).
 
     Priority: a structural fact (selling all generation, joint ownership,
     insufficient roof) outranks the default net-metering path, which itself
@@ -80,7 +80,7 @@ def recommend_commercial_model(
     wants_zero_upfront: bool,
     can_absorb_performance_risk: bool,
 ) -> Recommendation:
-    """Pick CAPEX/EPC vs RESCO/PPA (§4 commercial model selector).
+    """Pick CAPEX/EPC vs RESCO/PPA (Section 4 commercial model selector).
 
     ``tax_appetite`` = the client has enough taxable profit to absorb
     accelerated depreciation — a qualifying question before pitching CAPEX.
@@ -107,7 +107,7 @@ def recommend_commercial_model(
     )
 
 
-# §4 compliance checklists — the legal gatekeepers and credibility filters.
+# Section 4 compliance checklists — the legal gatekeepers and credibility filters.
 INDIA_COMPLIANCE: list[str] = [
     "BIS certification — IS 14286 (modules) / IS 16221 & IS 16169 (inverters), mandatory",
     "ALMM listing — exact model number, required for subsidy/govt-linked projects; "
@@ -125,7 +125,7 @@ GCC_COMPLIANCE: list[str] = [
     "under a shared federal framework — no single GCC-wide rule",
 ]
 
-# Key PPA clauses to always check for (§4).
+# Key PPA clauses to always check for (Section 4).
 PPA_CLAUSES: list[str] = [
     "Tariff structure (fixed vs escalating)",
     "Minimum guaranteed generation / PR floor with compensation clause",

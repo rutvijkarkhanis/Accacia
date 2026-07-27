@@ -1,6 +1,6 @@
 """Enquiry → Quote orchestration.
 
-Ties §1 site assessment, §2 spec selection, and §3 financials into one call,
+Ties Section 1 site assessment, Section 2 spec selection, and Section 3 financials into one call,
 turning the KB "required inputs from any enquiry" into a structured quote.
 """
 
@@ -17,7 +17,7 @@ from .boq import BOQ, build_boq
 
 @dataclass
 class Enquiry:
-    """The KB §1 required inputs, plus optional overrides for the models."""
+    """The KB Section 1 required inputs, plus optional overrides for the models."""
 
     site_area_sqft: float
     location: str | None = None
@@ -28,13 +28,13 @@ class Enquiry:
     area_per_kwp: float = 100.0
     capacity_override_kwp: float | None = None
 
-    # §2 spec-driving conditions
+    # Section 2 spec-driving conditions
     conditions: SiteConditions = field(default_factory=SiteConditions)
 
-    # §3 financial overrides (defaults live in run_financials)
+    # Section 3 financial overrides (defaults live in run_financials)
     finance_overrides: dict[str, Any] = field(default_factory=dict)
 
-    # §6 BOQ overrides (module_wp, inverter_kw, dc_ac_ratio)
+    # Section 6 BOQ overrides (module_wp, inverter_kw, dc_ac_ratio)
     boq_overrides: dict[str, Any] = field(default_factory=dict)
 
 

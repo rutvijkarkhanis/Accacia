@@ -20,7 +20,7 @@ def test_end_to_end_quote():
     # BOQ is generated and its line costs reconcile to the CAPEX
     assert len(quote.boq.lines) == 9
     assert sum(ln.cost for ln in quote.boq.lines) == pytest.approx(quote.finance.capex)
-    # the §2 recommendation flows into the module line spec
+    # the Section 2 recommendation flows into the module line spec
     assert "HJT" in next(
         ln for ln in quote.boq.lines if ln.item == "Modules"
     ).spec

@@ -1,4 +1,4 @@
-"""§1 Site Assessment — capacity derivation and generation.
+"""Section 1 Site Assessment — capacity derivation and generation.
 
 Encodes the capacity, generation, and CUF logic from
 ``sections/01-site-assessment.md``.
@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-# Peak Sun Hours (kWh/m²/day) by region — §1. Ranges in the KB are collapsed to
+# Peak Sun Hours (kWh/m²/day) by region — Section 1. Ranges in the KB are collapsed to
 # a representative midpoint here; override with an explicit ``psh`` when known.
 # Values are planning midpoints for annual daily PSH; site-specific resource
 # assessment (satellite/ground data) should supersede them for a real quote.
@@ -192,7 +192,7 @@ def assess_site(
     sanctioned_load_kva: float | None = None,
     capacity_override_kwp: float | None = None,
 ) -> SiteAssessment:
-    """Run the full §1 assessment for a site.
+    """Run the full Section 1 assessment for a site.
 
     Provide either ``location`` (looked up in ``PSH_BY_REGION``) or an explicit
     ``psh``. ``pr`` defaults to the KB "standard good EPC" benchmark of 80%.

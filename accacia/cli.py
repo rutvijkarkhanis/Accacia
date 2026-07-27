@@ -23,7 +23,7 @@ def _build_parser() -> argparse.ArgumentParser:
         prog="accacia",
         description="Solar EPC enquiry-to-quote engine (C&I rooftop, India 2026).",
     )
-    # §1 site inputs
+    # Section 1 site inputs
     p.add_argument("--area", type=float, required=True, help="Roof/land area (sqft)")
     p.add_argument("--location", help="City/state (resolves PSH), e.g. Ahmedabad")
     p.add_argument("--psh", type=float, help="Explicit Peak Sun Hours (overrides location)")
@@ -37,7 +37,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--capacity", type=float, dest="capacity_override",
                    help="Override feasible capacity (kWp)")
 
-    # §2 spec conditions
+    # Section 2 spec conditions
     p.add_argument("--climate", choices=["hot", "moderate", "cool"], default="moderate")
     p.add_argument("--reflective-mount", action="store_true",
                    help="Elevated/ground mount over a reflective surface")
@@ -51,14 +51,14 @@ def _build_parser() -> argparse.ArgumentParser:
                    help="5–8 yr payback-focused C&I buyer")
     p.add_argument("--budget-sensitive", action="store_true")
 
-    # §3 finance overrides
+    # Section 3 finance overrides
     p.add_argument("--cost-per-watt", type=float, help="₹/W turnkey (default 40)")
     p.add_argument("--grid-tariff", type=float, help="₹/unit commercial (default 8.5)")
     p.add_argument("--tariff-escalation", type=float, help="fraction/yr (default 0.04)")
     p.add_argument("--tenure", type=int, dest="tenure_years", help="years (default 25)")
     p.add_argument("--discount-rate", type=float, help="fraction (default 0.10)")
 
-    # §6 BOQ overrides
+    # Section 6 BOQ overrides
     p.add_argument("--module-wp", type=int, help="Module wattage (default 580)")
     p.add_argument("--inverter-kw", type=float, help="Inverter unit size kW (default 100)")
     p.add_argument("--dc-ac-ratio", type=float, help="DC:AC ratio (default 1.2)")

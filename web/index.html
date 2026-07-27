@@ -83,7 +83,7 @@
     <h2>Enquiry</h2>
     <form id="f">
       <fieldset>
-        <legend>Site (§1)</legend>
+        <legend>Site (Section 1)</legend>
         <div class="grp"><label>Roof / land area (sqft)</label>
           <input type="number" id="area" value="20000" min="1"></div>
         <div class="row2">
@@ -130,7 +130,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>Priorities (§2)</legend>
+        <legend>Priorities (Section 2)</legend>
         <div class="grp"><label>Climate</label>
           <select id="climate"><option value="moderate">moderate</option>
             <option value="hot" selected>hot</option><option value="cool">cool</option></select></div>
@@ -143,7 +143,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>Assumptions (§3 / §6)</legend>
+        <legend>Assumptions (Sections 3/6)</legend>
         <div class="row2">
           <div class="grp"><label>Cost per watt (₹)</label>
             <input type="number" id="cpw" value="40" step="0.5"></div>
@@ -190,7 +190,7 @@ document.getElementById('themeBtn').onclick = () => {
   r.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
 };
 
-/* ---------- §1 site ---------- */
+/* ---------- Section 1 site ---------- */
 const PSH = {
   rajasthan:5.7,jodhpur:5.7,jaisalmer:5.75,bikaner:5.7,jaipur:5.6,kutch:5.7,
   gujarat:5.55,ahmedabad:5.55,surat:5.5,vadodara:5.5,rajkot:5.55,
@@ -221,7 +221,7 @@ function assessSite(i){
   return {usable,areaCap,loadCap,feasible,binding,gen,cuf,psh:i.psh,pr:i.pr};
 }
 
-/* ---------- §2 spec matrix (priority-ordered) ---------- */
+/* ---------- Section 2 spec matrix (priority-ordered) ---------- */
 function recommendSpec(c){
   const D="Mono TOPCon, half-cut, glass-backsheet, monofacial, PVEL Top Performer";
   if(c.space) return{tech:"HJT / IBC / BC-hybrid",reason:"Roof space is the binding constraint — maximise watts/sqft.",rule:"space-constrained"};
@@ -235,7 +235,7 @@ function recommendSpec(c){
   return{tech:"Mono TOPCon (base case)",bom:D,reason:"No single priority stated — market-converged base case (TOPCon ~60–66% share).",rule:"default",upgrade:"HJT/bifacial as a priced upgrade tier"};
 }
 
-/* ---------- §3 finance ---------- */
+/* ---------- Section 3 finance ---------- */
 function degFactor(y,first,ann){ return y<=1?1:(1-first)*Math.pow(1-ann,y-2); }
 function npv(rate,capex,sav){ let v=-capex; for(let y=1;y<=sav.length;y++) v+=sav[y-1]/Math.pow(1+rate,y); return v; }
 function irr(capex,sav){
@@ -262,7 +262,7 @@ function runFinance(cap,gen1,p){
     lifeCapex:ccum+capex,lifeResco:rcum,tenure:p.tenure};
 }
 
-/* ---------- §6 BOQ ---------- */
+/* ---------- Section 6 BOQ ---------- */
 const SPLIT={"Modules":.575,"Inverters":.11,"Mounting structure (BOS)":.165,
   "DC cabling & protection":.035,"AC cabling & protection":.03,
   "Earthing & lightning protection":.015,"Monitoring & metering":.02,
@@ -298,14 +298,14 @@ function render(q){
       </div>
     </div>
     <div class="card">
-      <h2>Spec recommendation (§2)</h2>
+      <h2>Spec recommendation (Section 2)</h2>
       <div class="rec"><div class="t">${sp.tech} <span class="pill">${sp.rule}</span></div>
         <div class="r">${sp.reason}</div>
         <div class="r">BOM: ${bo.moduleSpec}</div>
         ${sp.upgrade?`<div class="r">Upgrade tier: ${sp.upgrade}</div>`:''}</div>
     </div>
     <div class="card">
-      <h2>Financials (§3)</h2>
+      <h2>Financials (Section 3)</h2>
       <div class="stat-row">
         <div class="stat"><div class="k">CAPEX</div><div class="v">${fmt0(fi.capex)}</div></div>
         <div class="stat"><div class="k">Payback</div><div class="v">${payback}</div></div>
@@ -322,7 +322,7 @@ function render(q){
           <tbody>${schedRows}</tbody></table></div></details>
     </div>
     <div class="card">
-      <h2>Bill of quantities (§6)</h2>
+      <h2>Bill of quantities (Section 6)</h2>
       <p class="muted" style="margin:0 0 10px;font-size:13px">
         ${s.feasible.toFixed(1)} kWp DC / ${bo.ac.toFixed(1)} kW AC ·
         ${bo.mods} × ${bo.modWp} Wp modules · ${bo.invs} × 100 kW inverters</p>

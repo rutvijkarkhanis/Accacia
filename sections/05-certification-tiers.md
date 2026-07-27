@@ -27,4 +27,4 @@
 
 **Diligence question that actually separates vendors:** not "is it certified" but "which IEC edition, does it include MQT21 (PID), and can you show the exact model's PVEL category breakdown + EL images for this specific batch?"
 
-> How these tiers feed spec selection is in [§2 Product/Spec Selection](./02-product-spec-selection.md); the PID mechanism behind MQT21 is explained in [§7 Physics Reference](./07-physics-reference.md).
+> How these tiers feed spec selection is in [Section 2 Product/Spec Selection](./02-product-spec-selection.md); the PID mechanism behind MQT21 is explained in [Section 7 Physics Reference](./07-physics-reference.md).

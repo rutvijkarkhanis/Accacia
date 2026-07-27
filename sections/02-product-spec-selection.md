@@ -22,4 +22,4 @@
 - DC:AC ratio 1.1–1.3x → captures more energy across the day without wasting inverter capacity
 - ALMM listing (exact model, not brand) → mandatory for subsidy/govt-linked projects in India
 
-> See also: [§5 Certification & Differentiation Tiers](./05-certification-tiers.md) for PVEL/BOM detail, and [§7 Physics Reference](./07-physics-reference.md) for the underlying mechanisms.
+> See also: [Section 5 Certification & Differentiation Tiers](./05-certification-tiers.md) for PVEL/BOM detail, and [Section 7 Physics Reference](./07-physics-reference.md) for the underlying mechanisms.

@@ -35,4 +35,4 @@
 - Shams Dubai net metering pathway via Hab Reeh platform
 - Note: each UAE emirate runs its own utility program (DEWA ≠ ADDC ≠ EtihadWE) under a shared federal framework — no single GCC-wide rule
 
-> The CAPEX-vs-RESCO cashflow math lives in [§3 Financial Model](./03-financial-model.md); certification detail behind the compliance checklist is in [§5 Certification & Differentiation Tiers](./05-certification-tiers.md).
+> The CAPEX-vs-RESCO cashflow math lives in [Section 3 Financial Model](./03-financial-model.md); certification detail behind the compliance checklist is in [Section 5 Certification & Differentiation Tiers](./05-certification-tiers.md).

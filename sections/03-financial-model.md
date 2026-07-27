@@ -41,4 +41,4 @@ Cumulative RESCO = Σ savings_y (starts at 0, no capex outlay)
 - RESCO tariff: typically 20–25% below grid tariff
 - RESCO escalation: 2–5%/yr
 
-> Generation inputs (PSH, PR, degradation) come from [§1 Site Assessment](./01-site-assessment.md); CAPEX-vs-RESCO fit is decided in [§4 Regulatory & Commercial Structuring](./04-regulatory-commercial.md).
+> Generation inputs (PSH, PR, degradation) come from [Section 1 Site Assessment](./01-site-assessment.md); CAPEX-vs-RESCO fit is decided in [Section 4 Regulatory & Commercial Structuring](./04-regulatory-commercial.md).
