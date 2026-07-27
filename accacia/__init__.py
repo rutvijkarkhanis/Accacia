@@ -38,6 +38,12 @@ from .regulatory import (
 )
 from .vendors import Vendor, recommend_vendors, shortlist_vendors
 from .brands import Brand, BRANDS, brand_names, get_brand
+from .price_list import (
+    PriceEntry,
+    default_price_list,
+    find_entry,
+    stale_entries,
+)
 from .shading import (
     RowSpacing,
     inter_row_shading,
@@ -77,6 +83,10 @@ __all__ = [
     "BRANDS",
     "brand_names",
     "get_brand",
+    "PriceEntry",
+    "default_price_list",
+    "find_entry",
+    "stale_entries",
     "RowSpacing",
     "inter_row_shading",
     "winter_solstice_noon_altitude",

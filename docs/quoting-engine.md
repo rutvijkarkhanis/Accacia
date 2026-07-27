@@ -13,6 +13,7 @@ the [Solar EPC Knowledge Bank](../README.md):
 | `accacia.boq` | [Section 6 BOQ Structure](../sections/06-boq-template.md) | 9-line bill of quantities: cost split, module/inverter counts, per-line specs |
 | `accacia.vendors` | [Section 5 Certification & Differentiation](../sections/05-certification-tiers.md) | PVEL 2026 vendor shortlisting and ranking |
 | `accacia.brands` | Section 5 roster | Module brand catalogue (name, PVEL standing, wattage, editable indicative rate) |
+| `accacia.price_list` | — | Managed per-brand/model price list with a `last_updated` stamp and staleness logic (seed defaults; the web tool persists edits in the browser) |
 | `accacia.shading` | [Section 1, Method 3](../sections/01-site-assessment.md) | Inter-row spacing, Ground Coverage Ratio, and layout loss for tilted rows |
 | `accacia.quote` | — | Orchestrates site/spec/finance/BOQ into one `Quote` |
 

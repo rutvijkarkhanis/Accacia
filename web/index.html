@@ -51,6 +51,16 @@
   button.info:hover{background:var(--accent-soft)}
   .stat .k{display:flex;align-items:center;gap:5px}
   .card h2 .info{vertical-align:middle;margin-left:6px}
+  #priceCard summary{cursor:pointer;font-size:13px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--muted);font-weight:600;list-style:none}
+  #priceCard summary::-webkit-details-marker{display:none}
+  input.pcell{padding:5px 7px;font-size:13px}
+  button.delRow{all:unset;cursor:pointer;color:var(--muted);font-weight:700;padding:0 6px}
+  button.delRow:hover{color:#b91c1c}
+  .stale{color:#b91c1c;font-weight:600}
+  :root[data-theme="dark"] .stale{color:#f87171}
+  @media (prefers-color-scheme:dark){.stale{color:#f87171}}
+  :root[data-theme="light"] .stale{color:#b91c1c}
   #tip{position:absolute;z-index:60;max-width:290px;background:var(--panel);color:var(--ink);
     border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.5;
     box-shadow:var(--shadow);display:none}
@@ -227,27 +237,14 @@
 
       <fieldset>
         <legend>Module &amp; pricing</legend>
-        <div class="grp"><div class="lbl">Module brand
-          <button class="info" type="button" data-hint="The panel manufacturer, from the roster of Indian makers with strong PVEL 2026 reliability testing. The brand sets the module line of the quotation and shows its PVEL standing; it does NOT set the price — you enter that below. Leave as 'Generic' to skip a named brand.">i</button></div>
-          <select id="brand">
-            <option value="">Generic (no named brand)</option>
-            <option>Adani Solar — 7/8 PVEL</option>
-            <option>ReNew — 7/8 PVEL</option>
-            <option>RenewSys — 7/8 PVEL</option>
-            <option>Waaree — PVEL roster</option>
-            <option>Vikram Solar — PVEL roster</option>
-            <option>Tata Power Solar — PVEL roster</option>
-            <option>Goldi Solar — PVEL roster</option>
-            <option>Gautam Solar — PVEL roster</option>
-            <option>Rayzon Solar — PVEL roster</option>
-            <option>Grew Solar — PVEL roster</option>
-            <option>EMMVEE — PVEL roster</option>
-            <option>Avaada Electro — PVEL roster</option>
-            <option>Solex — PVEL roster</option>
-          </select></div>
+        <div class="grp"><div class="lbl">Module brand / model
+          <button class="info" type="button" data-hint="The panel and model, drawn from your price list below. Selecting one fills in its rate and wattage automatically. Manage the list — including when each price was last updated — in the 'Module price list' panel on the results side. Leave as 'Generic' to skip a named brand.">i</button></div>
+          <select id="brand"><option value="">Generic (no named brand)</option></select>
+          <div style="margin-top:5px"><a href="#priceCard" id="managePrices"
+            style="font-size:12px;color:var(--accent)">Manage price list ↓</a></div></div>
         <div class="row2">
           <div class="grp"><div class="lbl">Module rate (₹/W)
-            <button class="info" type="button" data-hint="Your negotiated module (panel-only) price in rupees per watt. Module prices move constantly and differ by model and volume, so this is yours to set — the default is only an indicative starting point. Typically ₹18–26 per watt for the module alone. This drives the module line of the bill of quantities.">i</button></div>
+            <button class="info" type="button" data-hint="Module (panel-only) price in rupees per watt. Filled from the selected brand's price list entry, but editable here for a one-off override without changing the saved list. Typically ₹18–26 per watt. Drives the module line of the bill of quantities.">i</button></div>
             <input type="number" id="moduleRate" value="23" step="0.5"></div>
           <div class="grp"><div class="lbl">Balance of system (₹/W)
             <button class="info" type="button" data-hint="Everything except the panels — inverters, mounting structure, cabling, protection, monitoring, civil work, installation, and commissioning — as a rupees-per-watt figure. About ₹15–19 per watt. Module rate plus this equals the turnkey cost per watt.">i</button></div>
@@ -288,6 +285,19 @@
 
   <!-- RESULTS -->
   <div class="results">
+    <details class="card no-print" id="priceCard">
+      <summary>Module price list
+        <button class="info" type="button" data-hint="Your own price book, saved in this browser. Each row records a brand, model, wattage, and rate (rupees per watt), plus when you last updated it. Editing any cell stamps today's date. A red date means the price is stale — over 90 days old, or still a seeded indicative default — so update it before quoting. Selecting a brand in the enquiry pulls its rate and wattage from here.">i</button></summary>
+      <div id="priceTableWrap" class="tbl-scroll" style="margin-top:12px"></div>
+      <div class="actions" style="margin-top:10px">
+        <button class="qbtn" type="button" id="addPrice">+ Add brand / model</button>
+        <button class="qbtn" type="button" id="exportPrice">Export JSON</button>
+        <button class="qbtn" type="button" id="resetPrice">Reset to defaults</button>
+      </div>
+      <p class="muted" style="font-size:12px;margin-top:8px">
+        Saved in this browser only. A <span class="stale">red date</span> means the price is
+        stale (over 90 days old or an indicative default) — confirm and update it before quoting.</p>
+    </details>
     <div id="out" class="no-print"></div>
     <div class="card no-print" id="actionCard" style="display:none">
       <h2>Formal quotation</h2>
@@ -478,6 +488,51 @@ const H={
   boq:"An itemised breakdown of the capital cost across the nine standard line items. The module line is priced from your module rate; the remaining lines share what is left of the cost."
 };
 
+/* ---------- module price list (managed, saved in this browser) ---------- */
+const DESIG={"Adani Solar":7,"ReNew":7,"RenewSys":7};
+function brandTier(name){const d=DESIG[name]; return d?d+"/8 PVEL designations":"PVEL Top Performer roster";}
+const MODELS={"Adani Solar":"ASB-M10-144-AAA","RenewSys":"DESERV EXTREME"};
+const ROSTER=["Adani Solar","ReNew","RenewSys","Waaree","Vikram Solar","Tata Power Solar",
+  "Goldi Solar","Gautam Solar","Rayzon Solar","Grew Solar","EMMVEE","Avaada Electro","Solex"];
+const PRICE_KEY='accacia_prices_v1', STALE_DAYS=90;
+function defaultPrices(){
+  return ROSTER.map(b=>({brand:b,model:MODELS[b]||"(model to confirm)",wp:580,
+    rate:23,updated:"2026-01-01",indicative:true}));
+}
+function loadPrices(){
+  try{const s=localStorage.getItem(PRICE_KEY); if(s){const a=JSON.parse(s); if(Array.isArray(a)&&a.length) return a;}}
+  catch(e){}
+  return defaultPrices();
+}
+function savePrices(){ try{localStorage.setItem(PRICE_KEY,JSON.stringify(PRICES));}catch(e){} }
+let PRICES=loadPrices();
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const todayISO=()=>new Date().toISOString().slice(0,10);
+function daysSince(iso){return Math.floor((Date.now()-new Date(iso).getTime())/86400000);}
+function isStale(p){return p.indicative || daysSince(p.updated)>STALE_DAYS;}
+
+function renderPriceTable(){
+  const rows=PRICES.map((p,i)=>`<tr>
+    <td><input class="pcell" data-i="${i}" data-f="brand" value="${esc(p.brand)}"></td>
+    <td><input class="pcell" data-i="${i}" data-f="model" value="${esc(p.model)}"></td>
+    <td class="num"><input class="pcell" data-i="${i}" data-f="wp" type="number" value="${p.wp}" style="width:64px"></td>
+    <td class="num"><input class="pcell" data-i="${i}" data-f="rate" type="number" step="0.5" value="${p.rate}" style="width:70px"></td>
+    <td class="${isStale(p)?'stale':''}">${p.updated}${p.indicative?' · indicative':''}</td>
+    <td><button class="delRow" type="button" data-i="${i}" title="Delete">✕</button></td>
+  </tr>`).join('');
+  document.getElementById('priceTableWrap').innerHTML=
+    `<table><thead><tr><th>Brand</th><th>Model</th><th class="num">Wp</th>
+      <th class="num">₹/W</th><th>Last updated</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table>`;
+}
+function renderBrandOptions(){
+  const sel=document.getElementById('brand'), cur=sel.value;
+  sel.innerHTML='<option value="">Generic (no named brand)</option>'+
+    PRICES.map((p,i)=>`<option value="${i}">${esc(p.brand)} — ${esc(p.model)} (₹${p.rate}/W)</option>`).join('');
+  if(cur!=='' && +cur<PRICES.length) sel.value=cur;
+}
+function refreshPrices(){ savePrices(); renderPriceTable(); renderBrandOptions(); }
+
 let lastQuote=null;
 
 function compute(){
@@ -503,9 +558,12 @@ function compute(){
   const spec=recommendSpec({climate:g('climate').value,space:g('space').checked,
     aesthetic:g('aesthetic').checked,reflective:g('reflective').checked,
     longhold:g('longhold').checked,payback:g('payback').checked,budget:g('budget').checked});
-  const brandRaw=g('brand').value;
-  const brand=brandRaw?brandRaw.split(' — ')[0]:'';
-  const tier=brandRaw?(brandRaw.split(' — ')[1]||''):'';
+  const bidx=g('brand').value;
+  let brand='',model='',updated='',indic=false,tier='';
+  if(bidx!=='' && PRICES[+bidx]){
+    const p=PRICES[+bidx];
+    brand=p.brand; model=p.model; updated=p.updated; indic=isStale(p); tier=brandTier(brand);
+  }
   const moduleRate=gv('moduleRate'), bosRate=gv('bosRate'), cpw=moduleRate+bosRate;
   const fin=runFinance(site.feasible,site.gen,{cpw,tariff:gv('tariff'),
     esc:gv('esc'),disc:gv('disc'),tenure:gv('tenure')});
@@ -514,7 +572,7 @@ function compute(){
   return {site,spec,fin,boq,row,mount,inputs:{
     company:g('company').value,client:g('client').value,qno:g('qno').value,
     location:loc||('PSH '+psh),tariff:gv('tariff'),esc:gv('esc'),modWp:gv('modWp'),
-    brand,tier,moduleRate,bosRate,cpw}};
+    brand,tier,model,priceUpdated:updated,priceStale:indic,moduleRate,bosRate,cpw}};
 }
 
 function render(q){
@@ -619,7 +677,9 @@ function buildQuotation(q){
     <div class="qgrid">
       <div><span class="k">Module technology</span><span>${sp.tech}</span></div>
       ${bo.brand?`<div><span class="k">Module brand</span><span>${bo.brand}${bo.tier?' · '+bo.tier:''}</span></div>`:''}
+      ${inp.model?`<div><span class="k">Module model</span><span>${inp.model}</span></div>`:''}
       <div><span class="k">Modules</span><span>${bo.mods} × ${bo.brand?bo.brand+' ':''}${bo.modWp} Wp</span></div>
+      <div><span class="k">Module rate</span><span>₹${inp.moduleRate.toFixed(2)} / W${inp.priceUpdated?` (updated ${inp.priceUpdated}${inp.priceStale?', confirm before order':''})`:''}</span></div>
       <div><span class="k">Inverters</span><span>${bo.invs} × 100 kW string</span></div>
       <div><span class="k">Bill of materials</span><span>${bo.moduleSpec}</span></div>
     </div>
@@ -673,6 +733,44 @@ document.getElementById('mount').addEventListener('change', e=>{
   document.getElementById('tiltRow').style.display = t?'grid':'none';
   document.getElementById('panelRow').style.display = t?'block':'none';
 });
+
+/* price list: selecting a brand fills its rate + wattage */
+document.getElementById('brand').addEventListener('change', e=>{
+  const p=PRICES[+e.target.value];
+  if(p){ document.getElementById('moduleRate').value=p.rate; document.getElementById('modWp').value=p.wp; }
+});
+document.getElementById('managePrices').addEventListener('click', e=>{
+  e.preventDefault(); document.getElementById('priceCard').open=true;
+  document.getElementById('priceCard').scrollIntoView({behavior:'smooth'});
+});
+/* edit a price cell → stamp today, save, refresh */
+document.getElementById('priceTableWrap').addEventListener('change', e=>{
+  const el=e.target.closest('.pcell'); if(!el) return;
+  const i=+el.dataset.i, f=el.dataset.f, p=PRICES[i]; if(!p) return;
+  if(f==='wp') p.wp=Math.max(1,parseInt(el.value)||p.wp);
+  else if(f==='rate') p.rate=Math.max(0,parseFloat(el.value)||0);
+  else p[f]=el.value.trim()||p[f];
+  p.updated=todayISO(); p.indicative=false;
+  refreshPrices();
+});
+document.getElementById('priceTableWrap').addEventListener('click', e=>{
+  const btn=e.target.closest('.delRow'); if(!btn) return;
+  PRICES.splice(+btn.dataset.i,1); refreshPrices();
+});
+document.getElementById('addPrice').addEventListener('click', ()=>{
+  PRICES.push({brand:'New brand',model:'(model)',wp:580,rate:23,updated:todayISO(),indicative:false});
+  refreshPrices();
+});
+document.getElementById('exportPrice').addEventListener('click', ()=>{
+  const blob=new Blob([JSON.stringify(PRICES,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='accacia-price-list.json'; a.click(); URL.revokeObjectURL(a.href);
+});
+document.getElementById('resetPrice').addEventListener('click', ()=>{
+  if(confirm('Reset the price list to the seeded indicative defaults? Your edits will be lost.')){
+    PRICES=defaultPrices(); refreshPrices();
+  }
+});
 document.getElementById('f').addEventListener('submit', e=>{
   e.preventDefault();
   try{ lastQuote=compute(); render(lastQuote); }
@@ -690,6 +788,8 @@ document.getElementById('genQuote').addEventListener('click', ()=>{
 });
 document.getElementById('printQuote').addEventListener('click', ()=>window.print());
 
+renderPriceTable();
+renderBrandOptions();
 document.getElementById('f').dispatchEvent(new Event('submit'));
 </script>
 </body>
