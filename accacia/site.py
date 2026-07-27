@@ -82,6 +82,31 @@ PSH_BY_REGION: dict[str, float] = {
     "sharjah": 5.7,
 }
 
+# Approximate latitude (degrees North) by region, used to derive the winter-noon
+# sun angle for inter-row shading and a latitude-tilt default. Representative
+# city/state values; supersede with the exact site coordinates when known.
+LATITUDE_BY_REGION: dict[str, float] = {
+    "rajasthan": 26.9, "jodhpur": 26.3, "jaisalmer": 26.9, "bikaner": 28.0,
+    "jaipur": 26.9, "kutch": 23.7,
+    "gujarat": 22.3, "ahmedabad": 23.0, "surat": 21.2, "vadodara": 22.3, "rajkot": 22.3,
+    "madhya pradesh": 23.3, "bhopal": 23.3, "indore": 22.7,
+    "chhattisgarh": 21.2, "raipur": 21.2,
+    "telangana": 17.4, "hyderabad": 17.4,
+    "andhra pradesh": 16.5, "vijayawada": 16.5, "visakhapatnam": 17.7,
+    "nagpur": 21.1, "aurangabad": 19.9,
+    "chennai": 13.1, "tamil nadu": 13.1, "coimbatore": 11.0,
+    "bengaluru": 13.0, "bangalore": 13.0, "karnataka": 13.0,
+    "delhi": 28.6, "delhi ncr": 28.6, "ncr": 28.6, "noida": 28.6,
+    "gurgaon": 28.5, "gurugram": 28.5, "faridabad": 28.4, "haryana": 29.0,
+    "uttar pradesh": 26.8, "lucknow": 26.8, "kanpur": 26.4,
+    "punjab": 30.9, "ludhiana": 30.9, "amritsar": 31.6, "chandigarh": 30.7,
+    "bihar": 25.6, "patna": 25.6, "odisha": 20.3, "bhubaneswar": 20.3,
+    "pune": 18.5, "mumbai": 19.1, "maharashtra": 19.1,
+    "kerala": 9.9, "kochi": 9.9, "thiruvananthapuram": 8.5,
+    "west bengal": 22.6, "kolkata": 22.6, "assam": 26.1, "guwahati": 26.1,
+    "dubai": 25.2, "uae": 24.5, "abu dhabi": 24.5, "sharjah": 25.3,
+}
+
 DEFAULT_AREA_PER_KWP = 100.0  # sqft/kWp (KB range 90–110)
 DEFAULT_SHADING_LOSS = 0.08   # 8% (KB range 5–12%)
 
@@ -106,6 +131,23 @@ def lookup_psh(location: str) -> float:
             return psh
     raise KeyError(
         f"No PSH mapping for {location!r}; pass an explicit psh value."
+    )
+
+
+def lookup_latitude(location: str) -> float:
+    """Return an approximate latitude (degrees North) for a location string.
+
+    Matches the same region keys as ``lookup_psh``. Raises ``KeyError`` if the
+    location isn't recognised — callers should pass an explicit latitude then.
+    """
+    key = location.strip().lower()
+    if key in LATITUDE_BY_REGION:
+        return LATITUDE_BY_REGION[key]
+    for region, lat in LATITUDE_BY_REGION.items():
+        if region in key:
+            return lat
+    raise KeyError(
+        f"No latitude mapping for {location!r}; pass an explicit latitude."
     )
 
 

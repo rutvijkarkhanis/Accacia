@@ -37,6 +37,16 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--capacity", type=float, dest="capacity_override",
                    help="Override feasible capacity (kWp)")
 
+    # Mounting (tilted mounts derive the area derate from inter-row spacing)
+    p.add_argument("--mount", choices=["flush", "tilted"], default="flush",
+                   dest="mount_type", help="Mounting type (default flush)")
+    p.add_argument("--tilt", type=float, dest="tilt_deg",
+                   help="Tilt angle in degrees (tilted mount; default = latitude)")
+    p.add_argument("--latitude", type=float, dest="latitude_deg",
+                   help="Site latitude in degrees (tilted mount; default from location)")
+    p.add_argument("--panel-length", type=float, dest="panel_slant_length_m",
+                   default=2.3, help="Panel along-slope length in metres (default 2.3)")
+
     # Section 2 spec conditions
     p.add_argument("--climate", choices=["hot", "moderate", "cool"], default="moderate")
     p.add_argument("--reflective-mount", action="store_true",
@@ -98,6 +108,10 @@ def main(argv: list[str] | None = None) -> int:
         shading_loss=args.shading_loss,
         area_per_kwp=args.area_per_kwp,
         capacity_override_kwp=args.capacity_override,
+        mount_type=args.mount_type,
+        tilt_deg=args.tilt_deg,
+        latitude_deg=args.latitude_deg,
+        panel_slant_length_m=args.panel_slant_length_m,
         conditions=SiteConditions(
             climate=args.climate,
             reflective_ground_mount=args.reflective_mount,

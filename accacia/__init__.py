@@ -13,9 +13,11 @@ and equipment listings at point of procurement.
 """
 
 from .site import (
+    LATITUDE_BY_REGION,
     PSH_BY_REGION,
     SiteAssessment,
     assess_site,
+    lookup_latitude,
     lookup_psh,
 )
 from .specs import SpecRecommendation, recommend_spec
@@ -46,9 +48,11 @@ __version__ = "0.1.0"
 
 __all__ = [
     "PSH_BY_REGION",
+    "LATITUDE_BY_REGION",
     "SiteAssessment",
     "assess_site",
     "lookup_psh",
+    "lookup_latitude",
     "SpecRecommendation",
     "recommend_spec",
     "FinancialModel",

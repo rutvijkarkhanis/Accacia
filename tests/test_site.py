@@ -32,6 +32,19 @@ def test_psh_values_within_sane_band():
     assert all(4.0 < v < 6.5 for v in PSH_BY_REGION.values())
 
 
+def test_lookup_latitude():
+    from accacia.site import LATITUDE_BY_REGION, lookup_latitude
+
+    assert lookup_latitude("Ludhiana") == LATITUDE_BY_REGION["ludhiana"]
+    assert lookup_latitude("Somewhere, Kerala") == LATITUDE_BY_REGION["kerala"]
+    # northern-belt latitudes exceed southern ones, as expected
+    assert lookup_latitude("Amritsar") > lookup_latitude("Chennai")
+    # every tabled latitude is a plausible India/GCC value
+    assert all(8 < v < 33 for v in LATITUDE_BY_REGION.values())
+    with pytest.raises(KeyError):
+        lookup_latitude("Reykjavik")
+
+
 def test_lookup_psh_unknown_raises():
     with pytest.raises(KeyError):
         lookup_psh("Reykjavik")

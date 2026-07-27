@@ -45,6 +45,7 @@ pytest
 | `--pr` | Section 1 performance ratio | 0.80 (good-EPC benchmark) |
 | `--load` | Section 1 sanctioned load (kVA) — DISCOM capacity cross-check | none |
 | `--shading-loss`, `--area-per-kwp`, `--capacity` | Section 1 overrides | 0.08, 100, — |
+| `--mount {flush,tilted}`, `--tilt`, `--latitude`, `--panel-length` | Mounting; a tilted mount derives the area derate from inter-row spacing (latitude from location if not given, tilt defaults to latitude) | flush, —, —, 2.3 |
 | `--climate {hot,moderate,cool}` and spec flags | Section 2 decision matrix | moderate |
 | `--cost-per-watt`, `--grid-tariff`, `--tariff-escalation`, `--tenure`, `--discount-rate` | Section 3 assumptions | India-2026 midpoints |
 | `--module-wp`, `--inverter-kw`, `--dc-ac-ratio` | Section 6 BOQ sizing | 580 Wp, 100 kW, 1.2 |
