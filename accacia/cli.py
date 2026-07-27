@@ -58,15 +58,27 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--tenure", type=int, dest="tenure_years", help="years (default 25)")
     p.add_argument("--discount-rate", type=float, help="fraction (default 0.10)")
 
+    # §6 BOQ overrides
+    p.add_argument("--module-wp", type=int, help="Module wattage (default 580)")
+    p.add_argument("--inverter-kw", type=float, help="Inverter unit size kW (default 100)")
+    p.add_argument("--dc-ac-ratio", type=float, help="DC:AC ratio (default 1.2)")
+
     p.add_argument("--json", action="store_true", help="Emit full quote as JSON")
     p.add_argument("--schedule", action="store_true",
                    help="Print the year-by-year cashflow schedule")
+    p.add_argument("--boq", action="store_true",
+                   help="Print the full bill of quantities with per-line specs")
     return p
 
 
 def _finance_overrides(args: argparse.Namespace) -> dict:
     keys = ("cost_per_watt", "grid_tariff", "tariff_escalation",
             "tenure_years", "discount_rate")
+    return {k: getattr(args, k) for k in keys if getattr(args, k) is not None}
+
+
+def _boq_overrides(args: argparse.Namespace) -> dict:
+    keys = ("module_wp", "inverter_kw", "dc_ac_ratio")
     return {k: getattr(args, k) for k in keys if getattr(args, k) is not None}
 
 
@@ -96,6 +108,7 @@ def main(argv: list[str] | None = None) -> int:
             budget_sensitive=args.budget_sensitive,
         ),
         finance_overrides=_finance_overrides(args),
+        boq_overrides=_boq_overrides(args),
     )
 
     try:
@@ -116,6 +129,11 @@ def main(argv: list[str] | None = None) -> int:
                 f"  {r.year:>2}  {r.generation_units:>12,.0f}  "
                 f"{r.capex_cumulative:>16,.0f}  {r.resco_cumulative:>16,.0f}"
             )
+    if args.boq:
+        print("\n=== BOQ DETAIL (item | spec | qty | cost) ===")
+        for ln in quote.boq.lines:
+            qty = f"{ln.quantity:g} {ln.unit}" if ln.quantity and ln.unit else "lump"
+            print(f"  {ln.item}\n    {ln.spec}\n    {qty:<12} ₹{ln.cost:,.0f}")
     return 0
 
 

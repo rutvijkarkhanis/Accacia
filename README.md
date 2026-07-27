@@ -24,8 +24,8 @@ Each section lives in its own file under [`sections/`](./sections) for quick too
 The knowledge bank isn't just reference text — §1–§3 are encoded into a working
 **enquiry-to-quote tool**, the `accacia` Python package (pure standard library,
 tested). It turns the KB's "required inputs from any enquiry" into a capacity
-derivation, a spec recommendation, and a full CAPEX/RESCO financial model
-(payback, LCOE, IRR, NPV).
+derivation, a spec recommendation, a full CAPEX/RESCO financial model
+(payback, LCOE, IRR, NPV), and a §6 bill of quantities.
 
 ```bash
 python -m accacia --area 20000 --location Ahmedabad --load 250 \

@@ -27,6 +27,7 @@ from .finance import (
     npv,
     run_financials,
 )
+from .boq import BOQ, BOQLine, COST_SPLIT, build_boq
 from .quote import Enquiry, Quote, build_quote
 
 __version__ = "0.1.0"
@@ -44,6 +45,10 @@ __all__ = [
     "lcoe",
     "npv",
     "run_financials",
+    "BOQ",
+    "BOQLine",
+    "COST_SPLIT",
+    "build_boq",
     "Enquiry",
     "Quote",
     "build_quote",

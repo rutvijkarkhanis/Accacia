@@ -9,7 +9,8 @@ the [Solar EPC Knowledge Bank](../README.md):
 | `accacia.site` | [§1 Site Assessment](../sections/01-site-assessment.md) | Usable area → feasible capacity (roof-area vs sanctioned-load bound), year-1 generation, CUF |
 | `accacia.specs` | [§2 Product/Spec Selection](../sections/02-product-spec-selection.md) | Cell-technology decision matrix as a priority-ordered rule engine |
 | `accacia.finance` | [§3 Financial Model](../sections/03-financial-model.md) | CAPEX & RESCO year-by-year models, payback, LCOE, IRR, NPV |
-| `accacia.quote` | — | Orchestrates the three into one `Quote` |
+| `accacia.boq` | [§6 BOQ Structure](../sections/06-boq-template.md) | 9-line bill of quantities: cost split, module/inverter counts, per-line specs |
+| `accacia.quote` | — | Orchestrates the four into one `Quote` |
 
 ## Install / run
 
@@ -40,7 +41,8 @@ pytest
 | `--shading-loss`, `--area-per-kwp`, `--capacity` | §1 overrides | 0.08, 100, — |
 | `--climate {hot,moderate,cool}` and spec flags | §2 decision matrix | moderate |
 | `--cost-per-watt`, `--grid-tariff`, `--tariff-escalation`, `--tenure`, `--discount-rate` | §3 assumptions | India-2026 midpoints |
-| `--json`, `--schedule` | output format | text summary |
+| `--module-wp`, `--inverter-kw`, `--dc-ac-ratio` | §6 BOQ sizing | 580 Wp, 100 kW, 1.2 |
+| `--json`, `--schedule`, `--boq` | output format | text summary |
 
 Spec flags: `--reflective-mount`, `--space-constrained`, `--aesthetic`,
 `--long-hold`, `--payback-focused`, `--budget-sensitive`. They resolve in the
@@ -76,6 +78,12 @@ quote.to_dict()   # JSON-serialisable full quote incl. year-by-year rows
 - **IRR** is solved by bisection on the CAPEX cashflows; it returns `None` only
   when no sign change exists (savings never turn positive), and can legitimately
   be negative when savings never recover capex.
+- **BOQ cost allocation** splits total CAPEX across the 9 §6 line items by the
+  KB cost-split percentages (modules 57.5%, inverters 11%, BOS 16.5%, the six
+  remaining lines share the leftover 15%); the line costs always reconcile to
+  CAPEX. Module and inverter counts are derived from `--module-wp` and the
+  `--dc-ac-ratio` / `--inverter-kw`, and the §2 cell-tech recommendation flows
+  into the module line's spec text.
 - **Defaults** sit at the midpoints of the KB "India, 2026" assumption ranges.
   Override any of them per enquiry — always verify tariffs and ALMM/DISCOM rules
   at point of procurement.

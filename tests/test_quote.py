@@ -1,3 +1,5 @@
+import pytest
+
 from accacia.quote import Enquiry, build_quote
 from accacia.specs import SiteConditions
 
@@ -15,7 +17,15 @@ def test_end_to_end_quote():
     # hot climate is higher priority than payback → HJT recommendation
     assert quote.spec.rule == "hot-climate"
     assert quote.finance.capex > 0
-    assert "SITE" in quote.summary()
+    # BOQ is generated and its line costs reconcile to the CAPEX
+    assert len(quote.boq.lines) == 9
+    assert sum(ln.cost for ln in quote.boq.lines) == pytest.approx(quote.finance.capex)
+    # the §2 recommendation flows into the module line spec
+    assert "HJT" in next(
+        ln for ln in quote.boq.lines if ln.item == "Modules"
+    ).spec
+    summ = quote.summary()
+    assert "SITE" in summ and "BOQ" in summ
 
 
 def test_quote_to_dict_serialisable():
@@ -27,6 +37,7 @@ def test_quote_to_dict_serialisable():
     json.loads(json.dumps(d, default=str))
     assert "rows" in d["finance"]
     assert len(d["finance"]["rows"]) == quote.finance.tenure_years
+    assert len(d["boq"]["lines"]) == 9
 
 
 def test_finance_overrides_flow_through():

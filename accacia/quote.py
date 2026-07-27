@@ -12,6 +12,7 @@ from typing import Any
 from .site import SiteAssessment, assess_site
 from .specs import SiteConditions, SpecRecommendation, recommend_spec
 from .finance import FinancialModel, run_financials
+from .boq import BOQ, build_boq
 
 
 @dataclass
@@ -33,6 +34,9 @@ class Enquiry:
     # §3 financial overrides (defaults live in run_financials)
     finance_overrides: dict[str, Any] = field(default_factory=dict)
 
+    # §6 BOQ overrides (module_wp, inverter_kw, dc_ac_ratio)
+    boq_overrides: dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
 class Quote:
@@ -40,12 +44,14 @@ class Quote:
     site: SiteAssessment
     spec: SpecRecommendation
     finance: FinancialModel
+    boq: BOQ
 
     def summary(self) -> str:
         return (
             "=== SITE ===\n" + self.site.summary()
             + "\n\n=== SPEC ===\n" + self.spec.summary()
             + "\n\n=== FINANCIALS ===\n" + self.finance.summary()
+            + "\n\n=== BOQ ===\n" + self.boq.summary()
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -56,6 +62,7 @@ class Quote:
                 k: v for k, v in asdict(self.finance).items() if k != "rows"
             }
             | {"rows": [asdict(r) for r in self.finance.rows]},
+            "boq": self.boq.to_dict(),
         }
 
 
@@ -77,4 +84,11 @@ def build_quote(enquiry: Enquiry) -> Quote:
         site.annual_generation_units,
         **enquiry.finance_overrides,
     )
-    return Quote(enquiry=enquiry, site=site, spec=spec, finance=finance)
+    boq = build_boq(
+        site.feasible_capacity_kwp,
+        finance.capex,
+        cell_tech=spec.technology,
+        bom=spec.bom,
+        **enquiry.boq_overrides,
+    )
+    return Quote(enquiry=enquiry, site=site, spec=spec, finance=finance, boq=boq)
