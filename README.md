@@ -21,16 +21,20 @@ Each section lives in its own file under [`sections/`](./sections) for quick too
 
 ## Quoting engine
 
-The knowledge bank isn't just reference text — §1–§3 are encoded into a working
-**enquiry-to-quote tool**, the `accacia` Python package (pure standard library,
-tested). It turns the KB's "required inputs from any enquiry" into a capacity
-derivation, a spec recommendation, a full CAPEX/RESCO financial model
-(payback, LCOE, IRR, NPV), and a §6 bill of quantities.
+The knowledge bank isn't just reference text — most of it is encoded into a
+working **enquiry-to-quote tool**, the `accacia` Python package (pure standard
+library, tested). It turns the KB's "required inputs from any enquiry" into a
+capacity derivation (§1), a spec recommendation (§2), a full CAPEX/RESCO
+financial model (§3 — payback, LCOE, IRR, NPV), a bill of quantities (§6), plus
+structuring (§4) and vendor-shortlisting (§5) helpers.
 
 ```bash
 python -m accacia --area 20000 --location Ahmedabad --load 250 \
-    --climate hot --payback-focused
+    --climate hot --payback-focused --boq
 ```
+
+Prefer a UI? Open **[`web/index.html`](./web/index.html)** in a browser — a
+self-contained page that mirrors the same logic, no install required.
 
 See **[docs/quoting-engine.md](./docs/quoting-engine.md)** for the CLI reference,
 library API, and modelling notes.

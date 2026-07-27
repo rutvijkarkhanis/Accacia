@@ -9,8 +9,13 @@ the [Solar EPC Knowledge Bank](../README.md):
 | `accacia.site` | [§1 Site Assessment](../sections/01-site-assessment.md) | Usable area → feasible capacity (roof-area vs sanctioned-load bound), year-1 generation, CUF |
 | `accacia.specs` | [§2 Product/Spec Selection](../sections/02-product-spec-selection.md) | Cell-technology decision matrix as a priority-ordered rule engine |
 | `accacia.finance` | [§3 Financial Model](../sections/03-financial-model.md) | CAPEX & RESCO year-by-year models, payback, LCOE, IRR, NPV |
+| `accacia.regulatory` | [§4 Regulatory & Commercial](../sections/04-regulatory-commercial.md) | Grid-connection selector, CAPEX-vs-RESCO selector, PPA clauses, India/GCC compliance checklists |
 | `accacia.boq` | [§6 BOQ Structure](../sections/06-boq-template.md) | 9-line bill of quantities: cost split, module/inverter counts, per-line specs |
-| `accacia.quote` | — | Orchestrates the four into one `Quote` |
+| `accacia.vendors` | [§5 Certification & Differentiation](../sections/05-certification-tiers.md) | PVEL 2026 vendor shortlisting and ranking |
+| `accacia.quote` | — | Orchestrates site/spec/finance/BOQ into one `Quote` |
+
+A browser front-end that mirrors this logic (no install, no CLI) lives at
+[`web/index.html`](../web/index.html) — open it directly in a browser.
 
 ## Install / run
 
@@ -63,6 +68,25 @@ quote = build_quote(Enquiry(
 ))
 print(quote.summary())
 quote.to_dict()   # JSON-serialisable full quote incl. year-by-year rows
+```
+
+### §4 structuring & §5 vendor helpers
+
+These stand alone from the site→quote pipeline — call them to advise on
+structuring and procurement:
+
+```python
+from accacia import (
+    recommend_grid_connection, recommend_commercial_model,
+    compliance_checklist, recommend_vendors,
+)
+
+recommend_grid_connection(184).choice                # "Net metering"
+recommend_grid_connection(1500).choice               # "Open access" (over state cap)
+recommend_commercial_model(has_capital=True, tax_appetite=True,
+    wants_zero_upfront=False, can_absorb_performance_risk=True).choice   # "CAPEX / EPC"
+compliance_checklist("india")                        # legal-gatekeeper checklist
+recommend_vendors(3)                                 # Adani, RenewSys, ReNew (by PVEL standing)
 ```
 
 ## Modelling notes

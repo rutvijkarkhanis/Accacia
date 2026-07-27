@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Accacia — Solar EPC Quoting Tool</title>
+<style>
+  :root{
+    --bg:#f6f7f5; --panel:#ffffff; --ink:#1a2b22; --muted:#5f6f66;
+    --line:#e2e7e2; --accent:#1f7a4d; --accent-soft:#e8f3ec;
+    --warn:#8a5a00; --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#10140f; --panel:#181d16; --ink:#e8efe8; --muted:#93a396;
+      --line:#2a332a; --accent:#4fbb84; --accent-soft:#16281d; --warn:#e0b060;
+      --shadow:0 1px 3px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);}
+  }
+  :root[data-theme="dark"]{--bg:#10140f;--panel:#181d16;--ink:#e8efe8;--muted:#93a396;
+    --line:#2a332a;--accent:#4fbb84;--accent-soft:#16281d;--warn:#e0b060;}
+  :root[data-theme="light"]{--bg:#f6f7f5;--panel:#ffffff;--ink:#1a2b22;--muted:#5f6f66;
+    --line:#e2e7e2;--accent:#1f7a4d;--accent-soft:#e8f3ec;--warn:#8a5a00;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  header{padding:22px 20px 8px;max-width:1100px;margin:0 auto;}
+  h1{margin:0;font-size:22px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:13.5px;margin-top:3px}
+  .wrap{max-width:1100px;margin:0 auto;padding:12px 20px 60px;
+    display:grid;grid-template-columns:360px 1fr;gap:20px;align-items:start;}
+  @media (max-width:820px){.wrap{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);padding:18px;}
+  .card h2{margin:0 0 12px;font-size:13px;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--muted);}
+  form .grp{margin-bottom:14px}
+  label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:4px}
+  input,select{width:100%;padding:8px 10px;border:1px solid var(--line);
+    border-radius:9px;background:var(--bg);color:var(--ink);font-size:14px;}
+  input:focus,select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  fieldset{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 14px}
+  legend{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:0 6px}
+  .chk{display:flex;align-items:center;gap:7px;margin:5px 0;font-size:13px;color:var(--ink)}
+  .chk input{width:auto}
+  button{width:100%;padding:11px;border:0;border-radius:10px;background:var(--accent);
+    color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:4px}
+  button:hover{filter:brightness(1.06)}
+  .results{display:grid;gap:16px}
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media (max-width:560px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--accent-soft);border-radius:11px;padding:12px 14px}
+  .stat .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .stat .v{font-size:21px;font-weight:700;margin-top:3px;letter-spacing:-.01em}
+  .stat .n{font-size:11.5px;color:var(--muted);margin-top:1px}
+  .rec{border-left:3px solid var(--accent);padding:6px 0 6px 12px;margin:2px 0}
+  .rec .t{font-weight:650}
+  .rec .r{font-size:13px;color:var(--muted);margin-top:2px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .tbl-scroll{overflow-x:auto}
+  .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;
+    background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .muted{color:var(--muted)}
+  .foot{max-width:1100px;margin:0 auto;padding:0 20px 40px;color:var(--muted);font-size:12px}
+  details{margin-top:8px}
+  summary{cursor:pointer;font-size:13px;color:var(--accent)}
+  .theme-btn{position:absolute;top:22px;right:20px;width:auto;padding:6px 12px;
+    background:var(--panel);color:var(--ink);border:1px solid var(--line);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Accacia — Solar EPC Quoting Tool</h1>
+  <div class="sub">C&amp;I rooftop, 100 kW – 1.5 MW · India 2026 defaults · enter a site, get a full quote</div>
+  <button class="theme-btn" id="themeBtn" type="button">◐ Theme</button>
+</header>
+
+<div class="wrap">
+  <!-- INPUTS -->
+  <div class="card">
+    <h2>Enquiry</h2>
+    <form id="f">
+      <fieldset>
+        <legend>Site (§1)</legend>
+        <div class="grp"><label>Roof / land area (sqft)</label>
+          <input type="number" id="area" value="20000" min="1"></div>
+        <div class="row2">
+          <div class="grp"><label>Location</label>
+            <select id="location">
+              <option value="">— explicit PSH —</option>
+              <option>Rajasthan</option><option selected>Ahmedabad</option>
+              <option>Chennai</option><option>Bengaluru</option>
+              <option>Delhi NCR</option><option>Mumbai</option><option>Dubai</option>
+            </select></div>
+          <div class="grp"><label>PSH (if no location)</label>
+            <input type="number" id="psh" step="0.05" placeholder="e.g. 5.55"></div>
+        </div>
+        <div class="row2">
+          <div class="grp"><label>Sanctioned load (kVA)</label>
+            <input type="number" id="load" value="250" min="0" placeholder="optional"></div>
+          <div class="grp"><label>Performance ratio</label>
+            <input type="number" id="pr" value="0.80" step="0.01" min="0.5" max="1"></div>
+        </div>
+        <div class="row2">
+          <div class="grp"><label>Shading loss</label>
+            <input type="number" id="shading" value="0.08" step="0.01" min="0" max="0.5"></div>
+          <div class="grp"><label>sqft / kWp</label>
+            <input type="number" id="areaPerKwp" value="100" step="1" min="60"></div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Priorities (§2)</legend>
+        <div class="grp"><label>Climate</label>
+          <select id="climate"><option value="moderate">moderate</option>
+            <option value="hot" selected>hot</option><option value="cool">cool</option></select></div>
+        <label class="chk"><input type="checkbox" id="space"> Roof space is the binding constraint</label>
+        <label class="chk"><input type="checkbox" id="aesthetic"> Aesthetic-sensitive facade / BIPV</label>
+        <label class="chk"><input type="checkbox" id="reflective"> Elevated/ground over reflective surface</label>
+        <label class="chk"><input type="checkbox" id="longhold"> Long hold (20–25 yr)</label>
+        <label class="chk"><input type="checkbox" id="payback" checked> 5–8 yr payback focus</label>
+        <label class="chk"><input type="checkbox" id="budget"> Budget-sensitive</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Assumptions (§3 / §6)</legend>
+        <div class="row2">
+          <div class="grp"><label>Cost per watt (₹)</label>
+            <input type="number" id="cpw" value="40" step="0.5"></div>
+          <div class="grp"><label>Grid tariff (₹/unit)</label>
+            <input type="number" id="tariff" value="8.5" step="0.1"></div>
+        </div>
+        <div class="row2">
+          <div class="grp"><label>Tariff escalation</label>
+            <input type="number" id="esc" value="0.04" step="0.005"></div>
+          <div class="grp"><label>Discount rate</label>
+            <input type="number" id="disc" value="0.10" step="0.005"></div>
+        </div>
+        <div class="row2">
+          <div class="grp"><label>Module Wp</label>
+            <input type="number" id="modWp" value="580" step="5"></div>
+          <div class="grp"><label>DC:AC ratio</label>
+            <input type="number" id="dcac" value="1.2" step="0.05"></div>
+        </div>
+        <div class="grp"><label>Tenure (years)</label>
+          <input type="number" id="tenure" value="25" min="1" max="40"></div>
+      </fieldset>
+      <button type="submit">Generate quote</button>
+    </form>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="out"></div>
+</div>
+
+<div class="foot">
+  Figures reflect India, 2026 defaults and mirror the Python engine (<code>accacia</code>).
+  This is a planning aid — verify tariffs, ALMM/DISCOM rules, and equipment listings at
+  point of procurement.
+</div>
+
+<script>
+"use strict";
+
+/* ---------- theme toggle ---------- */
+document.getElementById('themeBtn').onclick = () => {
+  const r = document.documentElement;
+  const cur = r.getAttribute('data-theme') ||
+    (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+  r.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+};
+
+/* ---------- §1 site ---------- */
+const PSH = {rajasthan:5.7,jodhpur:5.7,gujarat:5.55,ahmedabad:5.55,chennai:5.35,
+  "tamil nadu":5.35,bengaluru:5.25,bangalore:5.25,karnataka:5.25,delhi:5.1,
+  "delhi ncr":5.1,ncr:5.1,mumbai:4.9,pune:4.9,dubai:5.7,uae:5.7};
+function lookupPsh(loc){
+  const k=(loc||'').trim().toLowerCase();
+  if(PSH[k]!=null) return PSH[k];
+  for(const r in PSH){ if(k.includes(r)) return PSH[r]; }
+  return null;
+}
+function assessSite(i){
+  const usable=i.area*(1-i.shading);
+  const areaCap=usable/i.areaPerKwp;
+  let loadCap=null, binding="roof area", feasible=areaCap;
+  if(i.load>0){ loadCap=i.load; if(loadCap<areaCap){feasible=loadCap;binding="sanctioned load";} }
+  const gen=feasible*i.psh*365*i.pr;
+  const cuf=gen/(feasible*8760)*100;
+  return {usable,areaCap,loadCap,feasible,binding,gen,cuf,psh:i.psh,pr:i.pr};
+}
+
+/* ---------- §2 spec matrix (priority-ordered) ---------- */
+function recommendSpec(c){
+  const D="Mono TOPCon, half-cut, glass-backsheet, monofacial, PVEL Top Performer";
+  if(c.space) return{tech:"HJT / IBC / BC-hybrid",reason:"Roof space is the binding constraint — maximise watts/sqft.",rule:"space-constrained"};
+  if(c.aesthetic) return{tech:"IBC / Back Contact (BC)",reason:"Aesthetic-sensitive — uniform black, no gridlines; bifaciality loss irrelevant on flush/facade.",rule:"aesthetic"};
+  if(c.reflective) return{tech:"Bifacial TOPCon or HJT",reason:"Reflective mount — captures rear-side light a flush monofacial roof would waste.",rule:"reflective-mount"};
+  if(c.climate==="hot") return{tech:"HJT (or TOPCon w/ strong temp coeff.)",reason:"Hot climate — lower %/°C loss protects generation in high heat.",rule:"hot-climate"};
+  if(c.longhold) return{tech:"HJT",reason:"Long hold — lower degradation compounds by year 15–25.",rule:"long-hold"};
+  if(c.climate==="cool") return{tech:"TOPCon",reason:"Cool/moderate — HJT heat advantage doesn't materialise; premium won't pay back.",rule:"cool-climate"};
+  if(c.payback) return{tech:"TOPCon",reason:"5–8 yr payback — best balance of cost, efficiency, bankability in 2026.",rule:"payback-focused",upgrade:"HJT/bifacial as a priced upgrade tier"};
+  if(c.budget) return{tech:"Mono PERC / TOPCon (monofacial)",reason:"Budget-sensitive standard rooftop — best ₹/W, adequate for most C&I.",rule:"budget-sensitive"};
+  return{tech:"Mono TOPCon (base case)",bom:D,reason:"No single priority stated — market-converged base case (TOPCon ~60–66% share).",rule:"default",upgrade:"HJT/bifacial as a priced upgrade tier"};
+}
+
+/* ---------- §3 finance ---------- */
+function degFactor(y,first,ann){ return y<=1?1:(1-first)*Math.pow(1-ann,y-2); }
+function npv(rate,capex,sav){ let v=-capex; for(let y=1;y<=sav.length;y++) v+=sav[y-1]/Math.pow(1+rate,y); return v; }
+function irr(capex,sav){
+  const f=r=>npv(r,capex,sav); let lo=-0.99,hi=10,flo=f(lo),fhi=f(hi);
+  if(flo*fhi>0) return null;
+  for(let k=0;k<200;k++){ const m=(lo+hi)/2,fm=f(m); if(Math.abs(fm)<1e-6) return m;
+    if(flo*fm<0){hi=m;} else {lo=m;flo=fm;} }
+  return (lo+hi)/2;
+}
+function runFinance(cap,gen1,p){
+  const capex=cap*1000*p.cpw, resco0=p.tariff*(1-0.22);
+  const rows=[]; let ccum=-capex,rcum=0,payback=null,totGen=0,totOm=0,sav=[];
+  for(let y=1;y<=p.tenure;y++){
+    const g=gen1*degFactor(y,0.02,0.005);
+    const grid=p.tariff*Math.pow(1+p.esc,y-1);
+    const om=capex*0.01*Math.pow(1.05,y-1);
+    const cs=g*grid-om; ccum+=cs;
+    const rr=resco0*Math.pow(1.03,y-1); const rs=g*(grid-rr); rcum+=rs;
+    if(payback==null&&ccum>=0) payback=y;
+    rows.push({y,g,ccum,rcum}); sav.push(cs); totGen+=g; totOm+=om;
+  }
+  return {capex,payback,rows,lcoe:(capex+totOm)/totGen,
+    irr:irr(capex,sav),npv:npv(p.disc,capex,sav),
+    lifeCapex:ccum+capex,lifeResco:rcum,tenure:p.tenure};
+}
+
+/* ---------- §6 BOQ ---------- */
+const SPLIT={"Modules":.575,"Inverters":.11,"Mounting structure (BOS)":.165,
+  "DC cabling & protection":.035,"AC cabling & protection":.03,
+  "Earthing & lightning protection":.015,"Monitoring & metering":.02,
+  "Civil & installation":.03,"Approvals, testing & commissioning":.02};
+function buildBoq(cap,capex,tech,bom,modWp,dcac){
+  const ac=cap/dcac, mods=Math.ceil(cap*1000/modWp), invs=Math.ceil(ac/100);
+  const lines=Object.entries(SPLIT).map(([item,pct])=>({item,pct,cost:capex*pct}));
+  return {ac,mods,invs,modWp,lines,moduleSpec:(bom||tech)};
+}
+
+/* ---------- formatting ---------- */
+const fmt0=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const fmtN=n=>Math.round(n).toLocaleString('en-IN');
+
+function render(q){
+  const s=q.site,sp=q.spec,fi=q.fin,bo=q.boq;
+  const payback=fi.payback?fi.payback+' yr':'>'+fi.tenure+' yr';
+  const irrTxt=fi.irr!=null?(fi.irr*100).toFixed(1)+'%':'n/a';
+  const boqRows=bo.lines.map(l=>`<tr><td>${l.item}</td>
+    <td class="num">${(l.pct*100).toFixed(1)}%</td><td class="num">${fmt0(l.cost)}</td></tr>`).join('');
+  const schedRows=fi.rows.map(r=>`<tr><td class="num">${r.y}</td>
+    <td class="num">${fmtN(r.g)}</td><td class="num">${fmt0(r.ccum)}</td>
+    <td class="num">${fmt0(r.rcum)}</td></tr>`).join('');
+  document.getElementById('out').innerHTML=`
+    <div class="card">
+      <h2>Site &amp; capacity</h2>
+      <div class="stat-row">
+        <div class="stat"><div class="k">Capacity</div><div class="v">${s.feasible.toFixed(1)} kWp</div>
+          <div class="n">limited by ${s.binding}</div></div>
+        <div class="stat"><div class="k">Yr-1 generation</div><div class="v">${fmtN(s.gen)}</div><div class="n">units · PSH ${s.psh}</div></div>
+        <div class="stat"><div class="k">CUF</div><div class="v">${s.cuf.toFixed(1)}%</div><div class="n">PR ${(s.pr*100).toFixed(0)}%</div></div>
+        <div class="stat"><div class="k">Usable area</div><div class="v">${fmtN(s.usable)}</div><div class="n">sqft</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Spec recommendation (§2)</h2>
+      <div class="rec"><div class="t">${sp.tech} <span class="pill">${sp.rule}</span></div>
+        <div class="r">${sp.reason}</div>
+        <div class="r">BOM: ${bo.moduleSpec}</div>
+        ${sp.upgrade?`<div class="r">Upgrade tier: ${sp.upgrade}</div>`:''}</div>
+    </div>
+    <div class="card">
+      <h2>Financials (§3)</h2>
+      <div class="stat-row">
+        <div class="stat"><div class="k">CAPEX</div><div class="v">${fmt0(fi.capex)}</div></div>
+        <div class="stat"><div class="k">Payback</div><div class="v">${payback}</div></div>
+        <div class="stat"><div class="k">IRR</div><div class="v">${irrTxt}</div></div>
+        <div class="stat"><div class="k">LCOE</div><div class="v">₹${fi.lcoe.toFixed(2)}</div><div class="n">per unit</div></div>
+      </div>
+      <p class="muted" style="margin:12px 0 0;font-size:13px">
+        NPV ${fmt0(fi.npv)} @ ${(document.getElementById('disc').value*100).toFixed(0)}% ·
+        Lifetime CAPEX savings ${fmt0(fi.lifeCapex)} ·
+        Lifetime RESCO savings ${fmt0(fi.lifeResco)}</p>
+      <details><summary>Year-by-year schedule</summary>
+        <div class="tbl-scroll"><table><thead><tr><th class="num">Yr</th>
+          <th class="num">Gen (units)</th><th class="num">CAPEX cum.</th><th class="num">RESCO cum.</th></tr></thead>
+          <tbody>${schedRows}</tbody></table></div></details>
+    </div>
+    <div class="card">
+      <h2>Bill of quantities (§6)</h2>
+      <p class="muted" style="margin:0 0 10px;font-size:13px">
+        ${s.feasible.toFixed(1)} kWp DC / ${bo.ac.toFixed(1)} kW AC ·
+        ${bo.mods} × ${bo.modWp} Wp modules · ${bo.invs} × 100 kW inverters</p>
+      <div class="tbl-scroll"><table><thead><tr><th>Line item</th>
+        <th class="num">% CAPEX</th><th class="num">Cost</th></tr></thead>
+        <tbody>${boqRows}</tbody></table></div>
+    </div>`;
+}
+
+/* ---------- wire up ---------- */
+function readInputs(){
+  const g=id=>document.getElementById(id);
+  const gv=id=>parseFloat(g(id).value);
+  const loc=g('location').value;
+  let psh=g('psh').value?parseFloat(g('psh').value):(loc?lookupPsh(loc):null);
+  if(psh==null) throw new Error('Pick a location or enter an explicit PSH.');
+  return {
+    site:{area:gv('area'),shading:gv('shading'),areaPerKwp:gv('areaPerKwp'),
+      load:g('load').value?gv('load'):0,pr:gv('pr'),psh},
+    cond:{climate:g('climate').value,space:g('space').checked,aesthetic:g('aesthetic').checked,
+      reflective:g('reflective').checked,longhold:g('longhold').checked,
+      payback:g('payback').checked,budget:g('budget').checked},
+    fin:{cpw:gv('cpw'),tariff:gv('tariff'),esc:gv('esc'),disc:gv('disc'),tenure:gv('tenure')},
+    modWp:gv('modWp'),dcac:gv('dcac')
+  };
+}
+document.getElementById('f').addEventListener('submit',e=>{
+  e.preventDefault();
+  try{
+    const i=readInputs();
+    const site=assessSite(i.site);
+    const spec=recommendSpec(i.cond);
+    const fin=runFinance(site.feasible,site.gen,i.fin);
+    const boq=buildBoq(site.feasible,fin.capex,spec.tech,spec.bom,i.modWp,i.dcac);
+    render({site,spec,fin,boq});
+  }catch(err){
+    document.getElementById('out').innerHTML=
+      `<div class="card"><p style="color:var(--warn);margin:0">⚠ ${err.message}</p></div>`;
+  }
+});
+document.getElementById('f').dispatchEvent(new Event('submit'));
+</script>
+</body>
+</html>

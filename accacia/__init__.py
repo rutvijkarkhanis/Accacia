@@ -28,6 +28,13 @@ from .finance import (
     run_financials,
 )
 from .boq import BOQ, BOQLine, COST_SPLIT, build_boq
+from .regulatory import (
+    Recommendation,
+    compliance_checklist,
+    recommend_commercial_model,
+    recommend_grid_connection,
+)
+from .vendors import Vendor, recommend_vendors, shortlist_vendors
 from .quote import Enquiry, Quote, build_quote
 
 __version__ = "0.1.0"
@@ -49,6 +56,13 @@ __all__ = [
     "BOQLine",
     "COST_SPLIT",
     "build_boq",
+    "Recommendation",
+    "compliance_checklist",
+    "recommend_commercial_model",
+    "recommend_grid_connection",
+    "Vendor",
+    "recommend_vendors",
+    "shortlist_vendors",
     "Enquiry",
     "Quote",
     "build_quote",
