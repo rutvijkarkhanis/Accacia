@@ -37,6 +37,7 @@ from .regulatory import (
     recommend_grid_connection,
 )
 from .vendors import Vendor, recommend_vendors, shortlist_vendors
+from .brands import Brand, BRANDS, brand_names, get_brand
 from .shading import (
     RowSpacing,
     inter_row_shading,
@@ -72,6 +73,10 @@ __all__ = [
     "Vendor",
     "recommend_vendors",
     "shortlist_vendors",
+    "Brand",
+    "BRANDS",
+    "brand_names",
+    "get_brand",
     "RowSpacing",
     "inter_row_shading",
     "winter_solstice_noon_altitude",

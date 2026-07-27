@@ -224,22 +224,32 @@
       </fieldset>
 
       <fieldset>
-        <legend>Commercial assumptions</legend>
+        <legend>Module &amp; pricing</legend>
+        <div class="grp"><div class="lbl">Module brand
+          <button class="info" type="button" data-hint="The panel manufacturer, from the roster of Indian makers with strong PVEL 2026 reliability testing. The brand sets the module line of the quotation and shows its PVEL standing; it does NOT set the price — you enter that below. Leave as 'Generic' to skip a named brand.">i</button></div>
+          <select id="brand">
+            <option value="">Generic (no named brand)</option>
+            <option>Adani Solar — 7/8 PVEL</option>
+            <option>ReNew — 7/8 PVEL</option>
+            <option>RenewSys — 7/8 PVEL</option>
+            <option>Waaree — PVEL roster</option>
+            <option>Vikram Solar — PVEL roster</option>
+            <option>Tata Power Solar — PVEL roster</option>
+            <option>Goldi Solar — PVEL roster</option>
+            <option>Gautam Solar — PVEL roster</option>
+            <option>Rayzon Solar — PVEL roster</option>
+            <option>Grew Solar — PVEL roster</option>
+            <option>EMMVEE — PVEL roster</option>
+            <option>Avaada Electro — PVEL roster</option>
+            <option>Solex — PVEL roster</option>
+          </select></div>
         <div class="row2">
-          <div class="grp"><div class="lbl">Cost per watt (₹)
-            <button class="info" type="button" data-hint="All-in turnkey installed cost in rupees per watt. ₹35–45 per watt is typical for commercial and industrial turnkey projects in 2026.">i</button></div>
-            <input type="number" id="cpw" value="40" step="0.5"></div>
-          <div class="grp"><div class="lbl">Grid tariff (₹/unit)
-            <button class="info" type="button" data-hint="What the site currently pays per unit (kilowatt-hour) of grid electricity, in rupees. Read the average rate off a recent electricity bill.">i</button></div>
-            <input type="number" id="tariff" value="8.5" step="0.1"></div>
-        </div>
-        <div class="row2">
-          <div class="grp"><div class="lbl">Tariff escalation
-            <button class="info" type="button" data-hint="How fast the grid tariff is expected to rise each year, as a fraction. 0.03–0.05 (3–5 percent) is typical.">i</button></div>
-            <input type="number" id="esc" value="0.04" step="0.005"></div>
-          <div class="grp"><div class="lbl">Discount rate
-            <button class="info" type="button" data-hint="The yearly rate that converts future money into today's worth — ₹100 saved five years from now is worth less than ₹100 today, and this rate says how much less. It is used only to compute Net Present Value; a higher rate makes distant savings count for less, so Net Present Value falls. Set it to what your money would otherwise earn — your cost of borrowing, or the return on an alternative investment. Enter it as a fraction: 0.10 means 10 percent. Typical range 0.08–0.12 (8–12 percent); use a higher figure if capital is scarce or costly.">i</button></div>
-            <input type="number" id="disc" value="0.10" step="0.005"></div>
+          <div class="grp"><div class="lbl">Module rate (₹/W)
+            <button class="info" type="button" data-hint="Your negotiated module (panel-only) price in rupees per watt. Module prices move constantly and differ by model and volume, so this is yours to set — the default is only an indicative starting point. Typically ₹18–26 per watt for the module alone. This drives the module line of the bill of quantities.">i</button></div>
+            <input type="number" id="moduleRate" value="23" step="0.5"></div>
+          <div class="grp"><div class="lbl">Balance of system (₹/W)
+            <button class="info" type="button" data-hint="Everything except the panels — inverters, mounting structure, cabling, protection, monitoring, civil work, installation, and commissioning — as a rupees-per-watt figure. About ₹15–19 per watt. Module rate plus this equals the turnkey cost per watt.">i</button></div>
+            <input type="number" id="bosRate" value="17" step="0.5"></div>
         </div>
         <div class="row2">
           <div class="grp"><div class="lbl">Module wattage (Wp)
@@ -249,9 +259,26 @@
             <button class="info" type="button" data-hint="Panel (direct current) capacity divided by inverter (alternating current) capacity. 1.1–1.3 captures more energy across the day without oversizing the inverter.">i</button></div>
             <input type="number" id="dcac" value="1.2" step="0.05"></div>
         </div>
-        <div class="grp"><div class="lbl">Tenure (years)
-          <button class="info" type="button" data-hint="The number of years to model, usually the 25-year panel performance-warranty period.">i</button></div>
-          <input type="number" id="tenure" value="25" min="1" max="40"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Commercial assumptions</legend>
+        <div class="row2">
+          <div class="grp"><div class="lbl">Grid tariff (₹/unit)
+            <button class="info" type="button" data-hint="What the site currently pays per unit (kilowatt-hour) of grid electricity, in rupees. Read the average rate off a recent electricity bill.">i</button></div>
+            <input type="number" id="tariff" value="8.5" step="0.1"></div>
+          <div class="grp"><div class="lbl">Tariff escalation
+            <button class="info" type="button" data-hint="How fast the grid tariff is expected to rise each year, as a fraction. 0.03–0.05 (3–5 percent) is typical.">i</button></div>
+            <input type="number" id="esc" value="0.04" step="0.005"></div>
+        </div>
+        <div class="row2">
+          <div class="grp"><div class="lbl">Discount rate
+            <button class="info" type="button" data-hint="The yearly rate that converts future money into today's worth — ₹100 saved five years from now is worth less than ₹100 today, and this rate says how much less. It is used only to compute Net Present Value; a higher rate makes distant savings count for less, so Net Present Value falls. Set it to what your money would otherwise earn — your cost of borrowing, or the return on an alternative investment. Enter it as a fraction: 0.10 means 10 percent. Typical range 0.08–0.12 (8–12 percent); use a higher figure if capital is scarce or costly.">i</button></div>
+            <input type="number" id="disc" value="0.10" step="0.005"></div>
+          <div class="grp"><div class="lbl">Tenure (years)
+            <button class="info" type="button" data-hint="The number of years to model, usually the 25-year panel performance-warranty period.">i</button></div>
+            <input type="number" id="tenure" value="25" min="1" max="40"></div>
+        </div>
       </fieldset>
       <button type="submit" class="go">Generate quote</button>
     </form>
@@ -410,10 +437,21 @@ const SPLIT={"Modules":.575,"Inverters":.11,"Mounting structure (Balance of Syst
   "Direct-current cabling & protection":.035,"Alternating-current cabling & protection":.03,
   "Earthing & lightning protection":.015,"Monitoring & metering":.02,
   "Civil & installation":.03,"Approvals, testing & commissioning":.02};
-function buildBoq(cap,capex,tech,bom,modWp,dcac){
+function buildBoq(cap,capex,tech,bom,modWp,dcac,moduleRate,brand,tier){
   const ac=cap/dcac, mods=Math.ceil(cap*1000/modWp), invs=Math.ceil(ac/100);
-  const lines=Object.entries(SPLIT).map(([item,pct])=>({item,pct,cost:capex*pct}));
-  return {ac,mods,invs,modWp,lines,moduleSpec:(bom||tech)};
+  let lines=Object.entries(SPLIT).map(([item,pct])=>({item,pct,cost:capex*pct}));
+  if(moduleRate!=null && !isNaN(moduleRate)){
+    const mc=mods*modWp*moduleRate;
+    if(mc>0 && mc<capex){
+      const others=Object.entries(SPLIT).filter(([k])=>k!=="Modules");
+      const ot=others.reduce((s,[,v])=>s+v,0), rem=capex-mc;
+      lines=[{item:"Modules",pct:mc/capex,cost:mc}].concat(
+        others.map(([k,v])=>({item:k,pct:rem*(v/ot)/capex,cost:rem*(v/ot)})));
+    }
+  }
+  const brandDesc = brand ? (brand + (tier?` (${tier})`:"")) : (tech);
+  const modSpec = brand ? `${brandDesc} — ${bom||tech}` : (bom||tech);
+  return {ac,mods,invs,modWp,lines,moduleSpec:modSpec,brand,tier};
 }
 
 /* ---------- formatting ---------- */
@@ -445,12 +483,18 @@ function compute(){
   const spec=recommendSpec({climate:g('climate').value,space:g('space').checked,
     aesthetic:g('aesthetic').checked,reflective:g('reflective').checked,
     longhold:g('longhold').checked,payback:g('payback').checked,budget:g('budget').checked});
-  const fin=runFinance(site.feasible,site.gen,{cpw:gv('cpw'),tariff:gv('tariff'),
+  const brandRaw=g('brand').value;
+  const brand=brandRaw?brandRaw.split(' — ')[0]:'';
+  const tier=brandRaw?(brandRaw.split(' — ')[1]||''):'';
+  const moduleRate=gv('moduleRate'), bosRate=gv('bosRate'), cpw=moduleRate+bosRate;
+  const fin=runFinance(site.feasible,site.gen,{cpw,tariff:gv('tariff'),
     esc:gv('esc'),disc:gv('disc'),tenure:gv('tenure')});
-  const boq=buildBoq(site.feasible,fin.capex,spec.tech,spec.bom,gv('modWp'),gv('dcac'));
+  const boq=buildBoq(site.feasible,fin.capex,spec.tech,spec.bom,gv('modWp'),gv('dcac'),
+    moduleRate,brand,tier);
   return {site,spec,fin,boq,row,mount,inputs:{
     company:g('company').value,client:g('client').value,qno:g('qno').value,
-    location:loc||('PSH '+psh),tariff:gv('tariff'),esc:gv('esc'),modWp:gv('modWp')}};
+    location:loc||('PSH '+psh),tariff:gv('tariff'),esc:gv('esc'),modWp:gv('modWp'),
+    brand,tier,moduleRate,bosRate,cpw}};
 }
 
 function render(q){
@@ -508,7 +552,7 @@ function render(q){
       <h2>Bill of quantities</h2>
       <p class="muted" style="margin:0 0 10px;font-size:13px">
         ${s.feasible.toFixed(1)} kWp direct current / ${bo.ac.toFixed(1)} kW alternating current ·
-        ${bo.mods} × ${bo.modWp} Wp modules · ${bo.invs} × 100 kW inverters</p>
+        ${bo.mods} × ${bo.brand?bo.brand+' ':''}${bo.modWp} Wp modules · ${bo.invs} × 100 kW inverters</p>
       <div class="tbl-scroll"><table><thead><tr><th>Line item</th>
         <th class="num">% of cost</th><th class="num">Amount</th></tr></thead>
         <tbody>${boqRows}</tbody></table></div>
@@ -554,7 +598,8 @@ function buildQuotation(q){
     <h4>2. Recommended specification</h4>
     <div class="qgrid">
       <div><span class="k">Module technology</span><span>${sp.tech}</span></div>
-      <div><span class="k">Modules</span><span>${bo.mods} × ${bo.modWp} Wp</span></div>
+      ${bo.brand?`<div><span class="k">Module brand</span><span>${bo.brand}${bo.tier?' · '+bo.tier:''}</span></div>`:''}
+      <div><span class="k">Modules</span><span>${bo.mods} × ${bo.brand?bo.brand+' ':''}${bo.modWp} Wp</span></div>
       <div><span class="k">Inverters</span><span>${bo.invs} × 100 kW string</span></div>
       <div><span class="k">Bill of materials</span><span>${bo.moduleSpec}</span></div>
     </div>

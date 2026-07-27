@@ -13,7 +13,13 @@ from .site import SiteAssessment, assess_site, lookup_latitude
 from .specs import SiteConditions, SpecRecommendation, recommend_spec
 from .finance import FinancialModel, run_financials
 from .boq import BOQ, build_boq
+from .brands import Brand, get_brand
 from .shading import RowSpacing, inter_row_shading
+
+# Default balance-of-system rate (rupees per watt) for everything except the
+# modules. Paired with the indicative module rate (~23) it reproduces the tool's
+# default turnkey cost of about 40 rupees per watt.
+DEFAULT_BOS_RATE_PER_WATT = 17.0
 
 # Single module mounted in portrait, along-slope length in metres (typical
 # 580 Wp module). Override per the actual table/row design.
@@ -51,6 +57,13 @@ class Enquiry:
 
     # Section 6 BOQ overrides (module_wp, inverter_kw, dc_ac_ratio)
     boq_overrides: dict[str, Any] = field(default_factory=dict)
+
+    # Module brand and rates. When a brand or module_rate_per_watt is set, the
+    # turnkey cost per watt is derived as module_rate + bos_rate (overriding any
+    # cost_per_watt), and the BOQ module line is priced from module_rate.
+    brand: str | None = None
+    module_rate_per_watt: float | None = None
+    bos_rate_per_watt: float = DEFAULT_BOS_RATE_PER_WATT
 
 
 @dataclass
@@ -119,6 +132,26 @@ def build_quote(enquiry: Enquiry) -> Quote:
         row_spacing = _tilted_row_spacing(enquiry)
         shading_loss = row_spacing.layout_loss_fraction
 
+    # Resolve the module brand/rate. A brand supplies an indicative rate and
+    # default wattage (both overridable); an explicit module_rate_per_watt wins.
+    brand_obj: Brand | None = None
+    module_rate = enquiry.module_rate_per_watt
+    if enquiry.brand:
+        try:
+            brand_obj = get_brand(enquiry.brand)
+        except KeyError as exc:
+            raise ValueError(str(exc)) from exc
+        if module_rate is None:
+            module_rate = brand_obj.indicative_rate_per_watt
+
+    finance_overrides = dict(enquiry.finance_overrides)
+    boq_overrides = dict(enquiry.boq_overrides)
+    if module_rate is not None:
+        # Turnkey cost per watt is driven by the chosen rates.
+        finance_overrides["cost_per_watt"] = module_rate + enquiry.bos_rate_per_watt
+    if brand_obj is not None and "module_wp" not in boq_overrides:
+        boq_overrides["module_wp"] = brand_obj.default_wp
+
     site = assess_site(
         enquiry.site_area_sqft,
         location=enquiry.location,
@@ -133,14 +166,17 @@ def build_quote(enquiry: Enquiry) -> Quote:
     finance = run_financials(
         site.feasible_capacity_kwp,
         site.annual_generation_units,
-        **enquiry.finance_overrides,
+        **finance_overrides,
     )
     boq = build_boq(
         site.feasible_capacity_kwp,
         finance.capex,
         cell_tech=spec.technology,
         bom=spec.bom,
-        **enquiry.boq_overrides,
+        brand=enquiry.brand,
+        brand_tier=brand_obj.tier() if brand_obj else None,
+        module_rate_per_watt=module_rate,
+        **boq_overrides,
     )
     return Quote(
         enquiry=enquiry, site=site, spec=spec, finance=finance, boq=boq,

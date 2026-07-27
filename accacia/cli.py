@@ -68,6 +68,13 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--tenure", type=int, dest="tenure_years", help="years (default 25)")
     p.add_argument("--discount-rate", type=float, help="fraction (default 0.10)")
 
+    # Module brand and rates
+    p.add_argument("--brand", help="Module brand from the roster, e.g. 'Adani Solar'")
+    p.add_argument("--module-rate", type=float, dest="module_rate_per_watt",
+                   help="Module price in ₹/W (overrides the brand's indicative rate)")
+    p.add_argument("--bos-rate", type=float, dest="bos_rate_per_watt", default=17.0,
+                   help="Balance-of-system rate in ₹/W (default 17)")
+
     # Section 6 BOQ overrides
     p.add_argument("--module-wp", type=int, help="Module wattage (default 580)")
     p.add_argument("--inverter-kw", type=float, help="Inverter unit size kW (default 100)")
@@ -112,6 +119,9 @@ def main(argv: list[str] | None = None) -> int:
         tilt_deg=args.tilt_deg,
         latitude_deg=args.latitude_deg,
         panel_slant_length_m=args.panel_slant_length_m,
+        brand=args.brand,
+        module_rate_per_watt=args.module_rate_per_watt,
+        bos_rate_per_watt=args.bos_rate_per_watt,
         conditions=SiteConditions(
             climate=args.climate,
             reflective_ground_mount=args.reflective_mount,

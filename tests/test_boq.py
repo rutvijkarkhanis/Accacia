@@ -66,6 +66,32 @@ def test_invalid_inputs():
         build_boq(200, capex=1000, dc_ac_ratio=0)
 
 
+def test_module_rate_prices_module_line_directly():
+    # capex = 200 kWp * 1000 * (23 + 17) = 8,000,000
+    boq = build_boq(200, capex=8_000_000, module_rate_per_watt=23.0, module_wp=580)
+    module = next(ln for ln in boq.lines if ln.item == "Modules")
+    expected = boq.module_count * 580 * 23.0
+    assert module.cost == pytest.approx(expected)
+    # lines still reconcile to the total capex
+    assert sum(ln.cost for ln in boq.lines) == pytest.approx(8_000_000)
+
+
+def test_brand_appears_in_module_spec_and_header():
+    boq = build_boq(200, capex=8_000_000, brand="Adani Solar",
+                    brand_tier="7/8 PVEL designations", module_rate_per_watt=23.0)
+    module = next(ln for ln in boq.lines if ln.item == "Modules")
+    assert "Adani Solar" in module.spec
+    assert boq.brand == "Adani Solar"
+    assert "Adani Solar" in boq.summary()
+
+
+def test_module_rate_zero_falls_back_to_split():
+    # a zero module rate can't exceed capex; module line becomes 0 and the rest
+    # absorb the total via the standard split without error
+    boq = build_boq(200, capex=8_000_000, module_rate_per_watt=0.0)
+    assert sum(ln.cost for ln in boq.lines) == pytest.approx(8_000_000)
+
+
 def test_zero_capex_ok():
     # a spec-only sizing with no price still produces a valid 9-line BOQ
     boq = build_boq(200, capex=0)

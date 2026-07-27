@@ -12,6 +12,7 @@ the [Solar EPC Knowledge Bank](../README.md):
 | `accacia.regulatory` | [Section 4 Regulatory & Commercial](../sections/04-regulatory-commercial.md) | Grid-connection selector, CAPEX-vs-RESCO selector, PPA clauses, India/GCC compliance checklists |
 | `accacia.boq` | [Section 6 BOQ Structure](../sections/06-boq-template.md) | 9-line bill of quantities: cost split, module/inverter counts, per-line specs |
 | `accacia.vendors` | [Section 5 Certification & Differentiation](../sections/05-certification-tiers.md) | PVEL 2026 vendor shortlisting and ranking |
+| `accacia.brands` | Section 5 roster | Module brand catalogue (name, PVEL standing, wattage, editable indicative rate) |
 | `accacia.shading` | [Section 1, Method 3](../sections/01-site-assessment.md) | Inter-row spacing, Ground Coverage Ratio, and layout loss for tilted rows |
 | `accacia.quote` | — | Orchestrates site/spec/finance/BOQ into one `Quote` |
 
@@ -48,6 +49,7 @@ pytest
 | `--mount {flush,tilted}`, `--tilt`, `--latitude`, `--panel-length` | Mounting; a tilted mount derives the area derate from inter-row spacing (latitude from location if not given, tilt defaults to latitude) | flush, —, —, 2.3 |
 | `--climate {hot,moderate,cool}` and spec flags | Section 2 decision matrix | moderate |
 | `--cost-per-watt`, `--grid-tariff`, `--tariff-escalation`, `--tenure`, `--discount-rate` | Section 3 assumptions | India-2026 midpoints |
+| `--brand`, `--module-rate`, `--bos-rate` | Module brand + editable ₹/W rates; brand/rate drives cost per watt and prices the module line | —, brand default, 17 |
 | `--module-wp`, `--inverter-kw`, `--dc-ac-ratio` | Section 6 BOQ sizing | 580 Wp, 100 kW, 1.2 |
 | `--json`, `--schedule`, `--boq` | output format | text summary |
 

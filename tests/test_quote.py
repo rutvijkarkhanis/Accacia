@@ -76,6 +76,32 @@ def test_invalid_mount_type_errors():
         build_quote(Enquiry(site_area_sqft=20000, psh=5.0, mount_type="floating"))
 
 
+def test_brand_drives_cost_and_boq():
+    q = build_quote(Enquiry(
+        site_area_sqft=20000, psh=5.5, brand="Adani Solar",
+        module_rate_per_watt=25, bos_rate_per_watt=18,
+    ))
+    # turnkey cost per watt = module_rate + bos_rate = 43
+    assert q.finance.capex == pytest.approx(q.site.feasible_capacity_kwp * 1000 * 43)
+    assert q.boq.brand == "Adani Solar"
+    module = next(ln for ln in q.boq.lines if ln.item == "Modules")
+    assert "Adani Solar" in module.spec
+    # module line priced from the rate, and the BOQ still totals to capex
+    assert module.cost == pytest.approx(q.boq.module_count * q.boq.module_wp * 25)
+    assert sum(ln.cost for ln in q.boq.lines) == pytest.approx(q.finance.capex)
+
+
+def test_brand_indicative_rate_used_when_no_explicit_rate():
+    q = build_quote(Enquiry(site_area_sqft=20000, psh=5.5, brand="Waaree"))
+    # indicative 23 + default bos 17 = 40 per watt
+    assert q.finance.capex == pytest.approx(q.site.feasible_capacity_kwp * 1000 * 40)
+
+
+def test_unknown_brand_errors():
+    with pytest.raises(ValueError):
+        build_quote(Enquiry(site_area_sqft=20000, psh=5.5, brand="Acme Panels"))
+
+
 def test_finance_overrides_flow_through():
     quote = build_quote(
         Enquiry(site_area_sqft=15000, psh=5.5,

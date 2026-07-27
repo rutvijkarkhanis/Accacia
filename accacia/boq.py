@@ -58,13 +58,15 @@ class BOQ:
     module_count: int
     inverter_kw: float
     inverter_count: int
+    brand: str | None = None
     lines: list[BOQLine] = field(default_factory=list)
 
     def summary(self) -> str:
+        brand = f"{self.brand} " if self.brand else ""
         head = (
             f"BOQ — {self.capacity_kwp:,.1f} kWp DC / {self.ac_capacity_kwp:,.1f} kW AC "
             f"(DC:AC {self.dc_ac_ratio:g})\n"
-            f"{self.module_count} × {self.module_wp} Wp modules  |  "
+            f"{self.module_count} × {brand}{self.module_wp} Wp modules  |  "
             f"{self.inverter_count} × {self.inverter_kw:g} kW inverters  |  "
             f"CAPEX ₹{self.capex:,.0f}"
         )
@@ -90,12 +92,20 @@ def build_boq(
     module_wp: int = DEFAULT_MODULE_WP,
     inverter_kw: float = DEFAULT_INVERTER_KW,
     dc_ac_ratio: float = DEFAULT_DC_AC_RATIO,
+    module_rate_per_watt: float | None = None,
+    brand: str | None = None,
+    brand_tier: str | None = None,
 ) -> BOQ:
     """Build a Section 6 bill of quantities for a sized, priced plant.
 
     ``cell_tech`` / ``bom`` come from the Section 2 spec recommendation and describe
-    the module line; the rest of the plant is standard BOS. Costs are allocated
-    from ``capex`` via ``COST_SPLIT``.
+    the module line; the rest of the plant is standard BOS.
+
+    Costing: by default every line is a share of ``capex`` via ``COST_SPLIT``.
+    If ``module_rate_per_watt`` is given, the module line is priced directly
+    (module count × wattage × rate) and the remaining lines split what is left of
+    ``capex`` in their usual proportions — so a chosen brand's rate actually drives
+    the module cost while the total still reconciles to ``capex``.
     """
     if capacity_kwp <= 0:
         raise ValueError("capacity_kwp must be positive")
@@ -105,15 +115,36 @@ def build_boq(
         raise ValueError("module_wp and inverter_kw must be positive")
     if dc_ac_ratio <= 0:
         raise ValueError("dc_ac_ratio must be positive")
+    if module_rate_per_watt is not None and module_rate_per_watt < 0:
+        raise ValueError("module_rate_per_watt must be non-negative")
 
     ac_capacity = capacity_kwp / dc_ac_ratio
     module_count = ceil(capacity_kwp * 1000 / module_wp)
     inverter_count = ceil(ac_capacity / inverter_kw)
 
-    module_spec = bom or (
-        f"{cell_tech or 'Mono TOPCon'}, half-cut; ALMM-listed model, product + "
-        "performance warranty"
+    brand_desc = (
+        f"{brand} ({brand_tier})" if brand and brand_tier
+        else brand if brand else (cell_tech or "Mono TOPCon")
     )
+    module_spec = bom or (
+        f"{brand_desc}, half-cut; ALMM-listed model, product + performance warranty"
+    )
+    if brand:  # keep the brand visible even when a custom BOM string is given
+        module_spec = f"{brand_desc} — {module_spec}"
+
+    # Decide the cost of each line.
+    line_costs = {item: capex * pct for item, pct in COST_SPLIT.items()}
+    if module_rate_per_watt is not None:
+        module_cost = module_count * module_wp * module_rate_per_watt
+        if 0 < module_cost < capex:
+            remaining = capex - module_cost
+            others_total = sum(
+                v for k, v in COST_SPLIT.items() if k != "Modules"
+            )
+            line_costs = {"Modules": module_cost}
+            for k, v in COST_SPLIT.items():
+                if k != "Modules":
+                    line_costs[k] = remaining * (v / others_total)
 
     # Per-line spec text (Section 6 template) and countable quantities where meaningful.
     specs: dict[str, tuple[str, float | None, str | None]] = {
@@ -162,16 +193,17 @@ def build_boq(
     }
 
     lines: list[BOQLine] = []
-    for item, pct in COST_SPLIT.items():
+    for item in COST_SPLIT:
         spec_text, qty, unit = specs[item]
+        cost = line_costs[item]
         lines.append(
             BOQLine(
                 item=item,
                 spec=spec_text,
                 quantity=qty,
                 unit=unit,
-                cost=capex * pct,
-                pct_of_capex=pct,
+                cost=cost,
+                pct_of_capex=(cost / capex if capex > 0 else COST_SPLIT[item]),
             )
         )
 
@@ -184,5 +216,6 @@ def build_boq(
         module_count=module_count,
         inverter_kw=inverter_kw,
         inverter_count=inverter_count,
+        brand=brand,
         lines=lines,
     )
