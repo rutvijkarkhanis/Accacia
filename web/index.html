@@ -45,10 +45,12 @@
   button.go{width:100%;padding:11px;border:0;border-radius:10px;background:var(--accent);
     color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:4px}
   button.go:hover{filter:brightness(1.06)}
-  button.info{all:unset;cursor:pointer;min-width:16px;height:16px;line-height:16px;text-align:center;
-    border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:800;
-    font-style:italic;flex:none}
-  button.info:hover{filter:brightness(.94)}
+  button.info{all:unset;cursor:pointer;min-width:15px;height:15px;line-height:15px;text-align:center;
+    border-radius:50%;background:transparent;color:var(--accent);border:1px solid var(--accent);
+    font-size:10px;font-weight:800;font-style:italic;flex:none}
+  button.info:hover{background:var(--accent-soft)}
+  .stat .k{display:flex;align-items:center;gap:5px}
+  .card h2 .info{vertical-align:middle;margin-left:6px}
   #tip{position:absolute;z-index:60;max-width:290px;background:var(--panel);color:var(--ink);
     border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.5;
     box-shadow:var(--shadow);display:none}
@@ -458,6 +460,24 @@ function buildBoq(cap,capex,tech,bom,modWp,dcac,moduleRate,brand,tier){
 const fmt0=n=>'₹'+Math.round(n).toLocaleString('en-IN');
 const fmtN=n=>Math.round(n).toLocaleString('en-IN');
 
+/* info icon for result fields (data-hint must contain no double quotes) */
+function I(t){ return ' <button class="info" type="button" data-hint="'+t+'">i</button>'; }
+const H={
+  capacity:"The system size in kilowatts-peak — the panels' rated direct-current output. It is set by the smaller of what the roof area allows and what the sanctioned load permits; the caption says which one bound it.",
+  gen:"Estimated electricity produced in the first year, in units (kilowatt-hours). Calculated as capacity × Peak Sun Hours × 365 × Performance Ratio. Later years fall slightly as the panels degrade.",
+  cuf:"Capacity Utilisation Factor — the year's generation as a share of what the system would make running at full rated output every hour of the year. Indian rooftop solar typically lands around 15–19 percent.",
+  usable:"The roof or land area actually available for panels after the shading and layout deduction — smaller than the gross area you entered.",
+  spec:"The recommended solar-cell technology for this site, chosen from the decision matrix by climate, space, aesthetics, and payback priorities. The reason line explains why this one won.",
+  capex:"The total turnkey cost to buy and install the system = capacity × 1000 × cost per watt (module rate + balance-of-system rate). Excludes taxes.",
+  payback:"The year in which cumulative savings first exceed the capital cost — how long until the system has paid for itself.",
+  irr:"Internal Rate of Return — the annualised return the investment earns over its life (the rate at which lifetime savings exactly equal the capital cost). Compare it to the return on your other uses of capital.",
+  lcoe:"Levelised Cost of Energy — the system's total lifetime cost divided by its total lifetime generation, in rupees per unit. If it is below your grid tariff, self-generated solar is cheaper than grid power.",
+  npv:"Net Present Value — lifetime savings restated in today's money using your discount rate, minus the capital cost. A positive figure means the project creates value at that discount rate.",
+  buy:"Total savings over the modelled tenure if you buy the system outright (the capital-expenditure model), after operations and maintenance costs.",
+  lease:"Total savings if a developer owns the system and you buy its power under a lease or power-purchase agreement (the RESCO model) — zero money upfront, but a smaller, capped saving.",
+  boq:"An itemised breakdown of the capital cost across the nine standard line items. The module line is priced from your module rate; the remaining lines share what is left of the cost."
+};
+
 let lastQuote=null;
 
 function compute(){
@@ -517,16 +537,16 @@ function render(q){
     <div class="card">
       <h2>Site &amp; capacity</h2>
       <div class="stat-row">
-        <div class="stat"><div class="k">Capacity</div><div class="v">${s.feasible.toFixed(1)} kWp</div>
+        <div class="stat"><div class="k">Capacity${I(H.capacity)}</div><div class="v">${s.feasible.toFixed(1)} kWp</div>
           <div class="n">limited by ${s.binding}</div></div>
-        <div class="stat"><div class="k">Year-1 generation</div><div class="v">${fmtN(s.gen)}</div><div class="n">units · Peak Sun Hours ${s.psh}</div></div>
-        <div class="stat"><div class="k">Capacity Utilisation</div><div class="v">${s.cuf.toFixed(1)}%</div><div class="n">Performance Ratio ${(s.pr*100).toFixed(0)}%</div></div>
-        <div class="stat"><div class="k">Usable area</div><div class="v">${fmtN(s.usable)}</div><div class="n">sqft (${q.mount})</div></div>
+        <div class="stat"><div class="k">Year-1 generation${I(H.gen)}</div><div class="v">${fmtN(s.gen)}</div><div class="n">units · Peak Sun Hours ${s.psh}</div></div>
+        <div class="stat"><div class="k">Capacity Utilisation${I(H.cuf)}</div><div class="v">${s.cuf.toFixed(1)}%</div><div class="n">Performance Ratio ${(s.pr*100).toFixed(0)}%</div></div>
+        <div class="stat"><div class="k">Usable area${I(H.usable)}</div><div class="v">${fmtN(s.usable)}</div><div class="n">sqft (${q.mount})</div></div>
       </div>
     </div>
     ${mountBlock}
     <div class="card">
-      <h2>Specification recommendation</h2>
+      <h2>Specification recommendation${I(H.spec)}</h2>
       <div class="rec"><div class="t">${sp.tech}</div>
         <div class="r">${sp.reason}</div>
         <div class="r">Bill of materials: ${bo.moduleSpec}</div>
@@ -535,21 +555,21 @@ function render(q){
     <div class="card">
       <h2>Financials</h2>
       <div class="stat-row">
-        <div class="stat"><div class="k">Capital cost</div><div class="v">${fmt0(fi.capex)}</div></div>
-        <div class="stat"><div class="k">Payback</div><div class="v">${payback}</div></div>
-        <div class="stat"><div class="k">Internal Rate of Return</div><div class="v">${irrTxt}</div></div>
-        <div class="stat"><div class="k">Levelised cost</div><div class="v">₹${fi.lcoe.toFixed(2)}</div><div class="n">per unit</div></div>
+        <div class="stat"><div class="k">Capital cost${I(H.capex)}</div><div class="v">${fmt0(fi.capex)}</div></div>
+        <div class="stat"><div class="k">Payback${I(H.payback)}</div><div class="v">${payback}</div></div>
+        <div class="stat"><div class="k">Internal Rate of Return${I(H.irr)}</div><div class="v">${irrTxt}</div></div>
+        <div class="stat"><div class="k">Levelised cost${I(H.lcoe)}</div><div class="v">₹${fi.lcoe.toFixed(2)}</div><div class="n">per unit</div></div>
       </div>
       <p class="muted" style="margin:12px 0 0;font-size:13px">
-        Net Present Value ${fmt0(fi.npv)} · Lifetime savings (buy) ${fmt0(fi.lifeCapex)} ·
-        Lifetime savings (lease) ${fmt0(fi.lifeResco)}</p>
+        Net Present Value ${fmt0(fi.npv)}${I(H.npv)} · Lifetime savings (buy) ${fmt0(fi.lifeCapex)}${I(H.buy)} ·
+        Lifetime savings (lease) ${fmt0(fi.lifeResco)}${I(H.lease)}</p>
       <details><summary>Year-by-year schedule</summary>
         <div class="tbl-scroll"><table><thead><tr><th class="num">Yr</th>
           <th class="num">Generation</th><th class="num">Buy cumulative</th><th class="num">Lease cumulative</th></tr></thead>
           <tbody>${schedRows}</tbody></table></div></details>
     </div>
     <div class="card">
-      <h2>Bill of quantities</h2>
+      <h2>Bill of quantities${I(H.boq)}</h2>
       <p class="muted" style="margin:0 0 10px;font-size:13px">
         ${s.feasible.toFixed(1)} kWp direct current / ${bo.ac.toFixed(1)} kW alternating current ·
         ${bo.mods} × ${bo.brand?bo.brand+' ':''}${bo.modWp} Wp modules · ${bo.invs} × 100 kW inverters</p>
