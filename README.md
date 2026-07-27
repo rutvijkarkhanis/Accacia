@@ -37,7 +37,10 @@ Prefer a UI? Open **[`web/index.html`](./web/index.html)** in a browser — a
 self-contained page that mirrors the same logic, no install required.
 
 See **[docs/quoting-engine.md](./docs/quoting-engine.md)** for the CLI reference,
-library API, and modelling notes.
+library API, and modelling notes, and
+**[docs/competitive-landscape.md](./docs/competitive-landscape.md)** for how
+established solar platforms compare and which of their capabilities Accacia can
+adopt next.
 
 ## Scope & intent
 
