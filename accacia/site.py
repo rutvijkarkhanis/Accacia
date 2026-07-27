@@ -245,6 +245,8 @@ def assess_site(
         psh = lookup_psh(location)
     if not 0 < pr <= 1:
         raise ValueError("pr must be in (0, 1]")
+    if capacity_override_kwp is not None and capacity_override_kwp <= 0:
+        raise ValueError("capacity_override_kwp must be positive")
 
     usable, area_cap, load_cap, binding = feasible_capacity(
         site_area_sqft,

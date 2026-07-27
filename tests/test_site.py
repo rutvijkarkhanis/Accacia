@@ -105,3 +105,7 @@ def test_invalid_inputs():
         feasible_capacity(-1)
     with pytest.raises(ValueError):
         assess_site(20000, psh=5.5, pr=1.5)
+    with pytest.raises(ValueError):
+        assess_site(20000, psh=5.5, capacity_override_kwp=0)
+    with pytest.raises(ValueError):
+        assess_site(20000, psh=5.5, capacity_override_kwp=-10)
