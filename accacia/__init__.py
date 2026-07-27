@@ -35,6 +35,11 @@ from .regulatory import (
     recommend_grid_connection,
 )
 from .vendors import Vendor, recommend_vendors, shortlist_vendors
+from .shading import (
+    RowSpacing,
+    inter_row_shading,
+    winter_solstice_noon_altitude,
+)
 from .quote import Enquiry, Quote, build_quote
 
 __version__ = "0.1.0"
@@ -63,6 +68,9 @@ __all__ = [
     "Vendor",
     "recommend_vendors",
     "shortlist_vendors",
+    "RowSpacing",
+    "inter_row_shading",
+    "winter_solstice_noon_altitude",
     "Enquiry",
     "Quote",
     "build_quote",

@@ -12,6 +12,7 @@ the [Solar EPC Knowledge Bank](../README.md):
 | `accacia.regulatory` | [Section 4 Regulatory & Commercial](../sections/04-regulatory-commercial.md) | Grid-connection selector, CAPEX-vs-RESCO selector, PPA clauses, India/GCC compliance checklists |
 | `accacia.boq` | [Section 6 BOQ Structure](../sections/06-boq-template.md) | 9-line bill of quantities: cost split, module/inverter counts, per-line specs |
 | `accacia.vendors` | [Section 5 Certification & Differentiation](../sections/05-certification-tiers.md) | PVEL 2026 vendor shortlisting and ranking |
+| `accacia.shading` | [Section 1, Method 3](../sections/01-site-assessment.md) | Inter-row spacing, Ground Coverage Ratio, and layout loss for tilted rows |
 | `accacia.quote` | — | Orchestrates site/spec/finance/BOQ into one `Quote` |
 
 A browser front-end that mirrors this logic (no install, no CLI) lives at
@@ -87,6 +88,22 @@ recommend_commercial_model(has_capital=True, tax_appetite=True,
     wants_zero_upfront=False, can_absorb_performance_risk=True).choice   # "CAPEX / EPC"
 compliance_checklist("india")                        # legal-gatekeeper checklist
 recommend_vendors(3)                                 # Adani, RenewSys, ReNew (by PVEL standing)
+```
+
+### Inter-row shading / Ground Coverage Ratio (tilted flat-roof and ground mounts)
+
+For tilted rows, work out the shadow-free spacing at winter-solstice solar noon,
+the Ground Coverage Ratio, and the area lost to spacing (which feeds the capacity
+derate). Pass a latitude (worst-case noon sun is taken automatically) or an
+explicit design-time solar altitude:
+
+```python
+from accacia import inter_row_shading
+
+r = inter_row_shading(panel_slant_length_m=2.0, tilt_deg=15, latitude_deg=28)
+print(r.summary())
+# Ground Coverage Ratio ~0.77, layout loss ~25% -> use as the shading/layout
+# area derate for a tilted flat-roof array at this latitude.
 ```
 
 ## Modelling notes
