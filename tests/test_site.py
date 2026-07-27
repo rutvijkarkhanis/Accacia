@@ -18,6 +18,20 @@ def test_lookup_psh_exact_and_substring():
     assert lookup_psh("Somewhere, Gujarat") == PSH_BY_REGION["gujarat"]
 
 
+def test_lookup_psh_new_regions():
+    # regions added to the table resolve, incl. the ones explicitly requested
+    assert lookup_psh("Hyderabad") == 5.4
+    assert lookup_psh("Ludhiana") == 5.0
+    assert lookup_psh("Delhi NCR") == 5.1
+    # city within a state string still resolves via substring match
+    assert lookup_psh("Sector 62, Noida") == PSH_BY_REGION["noida"]
+
+
+def test_psh_values_within_sane_band():
+    # every tabled PSH sits in a physically plausible range for the geography
+    assert all(4.0 < v < 6.5 for v in PSH_BY_REGION.values())
+
+
 def test_lookup_psh_unknown_raises():
     with pytest.raises(KeyError):
         lookup_psh("Reykjavik")

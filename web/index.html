@@ -90,9 +90,27 @@
           <div class="grp"><label>Location</label>
             <select id="location">
               <option value="">— explicit PSH —</option>
-              <option>Rajasthan</option><option selected>Ahmedabad</option>
-              <option>Chennai</option><option>Bengaluru</option>
-              <option>Delhi NCR</option><option>Mumbai</option><option>Dubai</option>
+              <optgroup label="High (5.5–5.8)">
+                <option>Rajasthan</option><option>Jaisalmer</option><option>Jaipur</option>
+                <option selected>Ahmedabad</option><option>Rajkot</option><option>Surat</option>
+              </optgroup>
+              <optgroup label="Good (5.3–5.5)">
+                <option>Bhopal</option><option>Indore</option><option>Hyderabad</option>
+                <option>Vijayawada</option><option>Nagpur</option><option>Chennai</option>
+                <option>Coimbatore</option><option>Bengaluru</option>
+              </optgroup>
+              <optgroup label="Moderate (5.0–5.2)">
+                <option>Delhi NCR</option><option>Noida</option><option>Gurgaon</option>
+                <option>Lucknow</option><option>Ludhiana</option><option>Amritsar</option>
+                <option>Chandigarh</option><option>Patna</option><option>Bhubaneswar</option>
+              </optgroup>
+              <optgroup label="Lower (4.6–5.0)">
+                <option>Pune</option><option>Mumbai</option><option>Kochi</option>
+                <option>Kolkata</option><option>Guwahati</option>
+              </optgroup>
+              <optgroup label="GCC">
+                <option>Dubai</option><option>Abu Dhabi</option><option>Sharjah</option>
+              </optgroup>
             </select></div>
           <div class="grp"><label>PSH (if no location)</label>
             <input type="number" id="psh" step="0.05" placeholder="e.g. 5.55"></div>
@@ -173,9 +191,20 @@ document.getElementById('themeBtn').onclick = () => {
 };
 
 /* ---------- §1 site ---------- */
-const PSH = {rajasthan:5.7,jodhpur:5.7,gujarat:5.55,ahmedabad:5.55,chennai:5.35,
-  "tamil nadu":5.35,bengaluru:5.25,bangalore:5.25,karnataka:5.25,delhi:5.1,
-  "delhi ncr":5.1,ncr:5.1,mumbai:4.9,pune:4.9,dubai:5.7,uae:5.7};
+const PSH = {
+  rajasthan:5.7,jodhpur:5.7,jaisalmer:5.75,bikaner:5.7,jaipur:5.6,kutch:5.7,
+  gujarat:5.55,ahmedabad:5.55,surat:5.5,vadodara:5.5,rajkot:5.55,
+  "madhya pradesh":5.45,bhopal:5.45,indore:5.45,chhattisgarh:5.4,raipur:5.4,
+  telangana:5.4,hyderabad:5.4,"andhra pradesh":5.4,vijayawada:5.4,visakhapatnam:5.35,
+  nagpur:5.4,aurangabad:5.35,chennai:5.35,"tamil nadu":5.35,coimbatore:5.4,
+  bengaluru:5.25,bangalore:5.25,karnataka:5.25,
+  delhi:5.1,"delhi ncr":5.1,ncr:5.1,noida:5.1,gurgaon:5.1,gurugram:5.1,faridabad:5.1,
+  haryana:5.1,"uttar pradesh":5.05,lucknow:5.05,kanpur:5.05,
+  punjab:5.0,ludhiana:5.0,amritsar:5.0,chandigarh:5.05,bihar:5.0,patna:5.0,
+  odisha:5.0,bhubaneswar:5.0,
+  pune:5.0,mumbai:4.9,maharashtra:4.95,kerala:4.95,kochi:4.95,thiruvananthapuram:4.95,
+  "west bengal":4.85,kolkata:4.85,assam:4.6,guwahati:4.6,
+  dubai:5.7,uae:5.7,"abu dhabi":5.75,sharjah:5.7};
 function lookupPsh(loc){
   const k=(loc||'').trim().toLowerCase();
   if(PSH[k]!=null) return PSH[k];

@@ -10,23 +10,76 @@ from dataclasses import dataclass
 
 # Peak Sun Hours (kWh/m²/day) by region — §1. Ranges in the KB are collapsed to
 # a representative midpoint here; override with an explicit ``psh`` when known.
+# Values are planning midpoints for annual daily PSH; site-specific resource
+# assessment (satellite/ground data) should supersede them for a real quote.
 PSH_BY_REGION: dict[str, float] = {
+    # --- High resource (5.5–5.8): arid NW belt ---
     "rajasthan": 5.7,
     "jodhpur": 5.7,
+    "jaisalmer": 5.75,
+    "bikaner": 5.7,
+    "jaipur": 5.6,
+    "kutch": 5.7,
     "gujarat": 5.55,
     "ahmedabad": 5.55,
+    "surat": 5.5,
+    "vadodara": 5.5,
+    "rajkot": 5.55,
+    # --- Good resource (5.3–5.5): central & Deccan plateau ---
+    "madhya pradesh": 5.45,
+    "bhopal": 5.45,
+    "indore": 5.45,
+    "chhattisgarh": 5.4,
+    "raipur": 5.4,
+    "telangana": 5.4,
+    "hyderabad": 5.4,
+    "andhra pradesh": 5.4,
+    "vijayawada": 5.4,
+    "visakhapatnam": 5.35,
+    "nagpur": 5.4,
+    "aurangabad": 5.35,
     "chennai": 5.35,
     "tamil nadu": 5.35,
+    "coimbatore": 5.4,
     "bengaluru": 5.25,
     "bangalore": 5.25,
     "karnataka": 5.25,
+    # --- Moderate resource (5.0–5.2): Indo-Gangetic plains / NCR ---
     "delhi": 5.1,
     "delhi ncr": 5.1,
     "ncr": 5.1,
+    "noida": 5.1,
+    "gurgaon": 5.1,
+    "gurugram": 5.1,
+    "faridabad": 5.1,
+    "haryana": 5.1,
+    "uttar pradesh": 5.05,
+    "lucknow": 5.05,
+    "kanpur": 5.05,
+    "punjab": 5.0,
+    "ludhiana": 5.0,
+    "amritsar": 5.0,
+    "chandigarh": 5.05,
+    "bihar": 5.0,
+    "patna": 5.0,
+    "odisha": 5.0,
+    "bhubaneswar": 5.0,
+    # --- Lower resource (4.8–5.0): humid coasts & monsoon belts ---
+    "pune": 5.0,
     "mumbai": 4.9,
-    "pune": 4.9,
+    "maharashtra": 4.95,
+    "kerala": 4.95,
+    "kochi": 4.95,
+    "thiruvananthapuram": 4.95,
+    "west bengal": 4.85,
+    "kolkata": 4.85,
+    "assam": 4.6,
+    "guwahati": 4.6,
+    # --- GCC ---
     "dubai": 5.7,
     "uae": 5.7,
+    "abu dhabi": 5.75,
+    "sharjah": 5.7,
 }
 
 DEFAULT_AREA_PER_KWP = 100.0  # sqft/kWp (KB range 90–110)
