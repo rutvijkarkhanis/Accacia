@@ -1,0 +1,97 @@
+"""Accacia — Solar EPC quoting engine.
+
+Turns a C&I rooftop solar enquiry into a spec recommendation and a financial
+model, encoding the logic from the Solar EPC Knowledge Bank (see ``sections/``):
+
+- ``site``    — Section 1 capacity derivation and generation/CUF
+- ``specs``   — Section 2 cell-technology decision matrix
+- ``finance`` — Section 3 CAPEX / RESCO models, LCOE, IRR, NPV
+- ``quote``   — orchestrates an enquiry into a full quote
+
+All figures reflect India, 2026 defaults. Verify tariffs, ALMM/DISCOM rules,
+and equipment listings at point of procurement.
+"""
+
+from .site import (
+    LATITUDE_BY_REGION,
+    PSH_BY_REGION,
+    SiteAssessment,
+    assess_site,
+    lookup_latitude,
+    lookup_psh,
+)
+from .specs import SpecRecommendation, recommend_spec
+from .finance import (
+    FinancialModel,
+    YearRow,
+    irr,
+    lcoe,
+    npv,
+    run_financials,
+)
+from .boq import BOQ, BOQLine, COST_SPLIT, build_boq
+from .regulatory import (
+    Recommendation,
+    compliance_checklist,
+    recommend_commercial_model,
+    recommend_grid_connection,
+)
+from .vendors import Vendor, recommend_vendors, shortlist_vendors
+from .brands import Brand, BRANDS, brand_names, get_brand
+from .price_list import (
+    PriceEntry,
+    default_price_list,
+    find_entry,
+    stale_entries,
+)
+from .shading import (
+    RowSpacing,
+    inter_row_shading,
+    winter_solstice_noon_altitude,
+)
+from .quote import Enquiry, Quote, build_quote
+
+__version__ = "0.1.0"
+
+__all__ = [
+    "PSH_BY_REGION",
+    "LATITUDE_BY_REGION",
+    "SiteAssessment",
+    "assess_site",
+    "lookup_psh",
+    "lookup_latitude",
+    "SpecRecommendation",
+    "recommend_spec",
+    "FinancialModel",
+    "YearRow",
+    "irr",
+    "lcoe",
+    "npv",
+    "run_financials",
+    "BOQ",
+    "BOQLine",
+    "COST_SPLIT",
+    "build_boq",
+    "Recommendation",
+    "compliance_checklist",
+    "recommend_commercial_model",
+    "recommend_grid_connection",
+    "Vendor",
+    "recommend_vendors",
+    "shortlist_vendors",
+    "Brand",
+    "BRANDS",
+    "brand_names",
+    "get_brand",
+    "PriceEntry",
+    "default_price_list",
+    "find_entry",
+    "stale_entries",
+    "RowSpacing",
+    "inter_row_shading",
+    "winter_solstice_noon_altitude",
+    "Enquiry",
+    "Quote",
+    "build_quote",
+    "__version__",
+]
