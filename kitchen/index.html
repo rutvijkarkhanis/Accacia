@@ -7,118 +7,280 @@
 <style>
   :root{
     --bg:#f6f7f5; --panel:#ffffff; --ink:#1a2b22; --muted:#5f6f66;
-    --line:#e2e7e2; --accent:#1f7a4d; --accent-soft:#e8f3ec; --warn:#8a5a00;
+    --line:#e2e7e2; --accent:#1f7a4d; --accent-ink:#ffffff; --accent-soft:#e8f3ec;
+    --warn:#8a4b00; --warn-soft:#fdf1e0; --field:#f3f5f3; --shadow:0 1px 2px rgba(0,0,0,.05);
   }
   @media (prefers-color-scheme:dark){
     :root:not([data-theme="light"]){--bg:#10140f; --panel:#181d16; --ink:#e8efe8; --muted:#93a396;
-      --line:#2a332a; --accent:#4fbb84; --accent-soft:#16281d; --warn:#e0b060;}
+      --line:#2a332a; --accent:#4fbb84; --accent-ink:#0b1510; --accent-soft:#16281d; --warn:#e0b060;
+      --warn-soft:#2a2215; --field:#10140f; --shadow:none;}
   }
-  :root[data-theme="dark"]{--bg:#10140f;--panel:#181d16;--ink:#e8efe8;--muted:#93a396;
-    --line:#2a332a;--accent:#4fbb84;--accent-soft:#16281d;--warn:#e0b060;}
+  :root[data-theme="dark"]{--bg:#10140f;--panel:#181d16;--ink:#e8efe8;--muted:#93a396;--line:#2a332a;
+    --accent:#4fbb84;--accent-ink:#0b1510;--accent-soft:#16281d;--warn:#e0b060;--warn-soft:#2a2215;--field:#10140f;--shadow:none;}
   *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
   body{margin:0;background:var(--bg);color:var(--ink);
-    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-  main{max-width:760px;margin:0 auto;padding:18px 16px 60px}
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding-bottom:84px}
+  button,input,select{font:inherit;color:inherit}
+  button{cursor:pointer;min-height:40px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 14px;white-space:nowrap}
+  button:hover{border-color:var(--accent)}
+  button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+  button.ghost{border-color:transparent;background:transparent;color:var(--accent);padding-left:8px;padding-right:8px}
+  button.danger{color:var(--warn)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  [hidden]{display:none!important}
+
+  .wrap{max-width:720px;margin:0 auto;padding:0 16px}
+  header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-top:18px}
   h1{margin:0;font-size:22px;letter-spacing:-.01em}
-  .sub{color:var(--muted);font-size:13.5px;margin:3px 0 14px}
-  .stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-  .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--muted)}
-  .stat b{color:var(--ink);font-size:17px;margin-right:4px}
-  .tabs{display:flex;gap:6px;margin-bottom:12px}
-  button,.seg button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);
-    border-radius:8px;padding:7px 12px}
-  button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .tabs button[aria-selected="true"],.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
-  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-  input[type="search"]{flex:1 1 220px;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;
-    background:var(--panel);color:var(--ink);min-width:0}
-  .seg{display:flex;gap:6px}
-  .seg button{padding:7px 10px}
-  h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:22px 0 8px}
-  ul.list{list-style:none;margin:0;padding:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-  li.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:10px 12px;border-top:1px solid var(--line)}
-  li.item:first-child{border-top:0}
-  li.item.have .name{color:var(--muted);text-decoration:line-through}
-  .left{display:flex;align-items:center;gap:10px;min-width:0}
-  .left input[type="checkbox"]{width:18px;height:18px;accent-color:var(--accent);flex:none;margin:0}
-  .name{overflow-wrap:anywhere}
-  .meta{color:var(--muted);font-size:12.5px;white-space:nowrap;align-self:center}
-  .row2{grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-left:28px}
-  .qty{font:inherit;font-size:13.5px;padding:5px 8px;border:1px solid var(--line);border-radius:7px;
-    background:var(--bg);color:var(--ink);width:170px;max-width:100%}
-  details{font-size:13px;color:var(--muted)}
-  details summary{cursor:pointer}
-  details ul{margin:6px 0 0;padding-left:16px}
-  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-  .tobuy{margin-top:20px}
-  .tobuy-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
-  .tobuy-head strong{font-size:15px}
-  .actions{display:flex;gap:8px;flex-wrap:wrap}
-  textarea{width:100%;min-height:120px;font:13.5px/1.5 ui-monospace,Menlo,Consolas,monospace;border:1px solid var(--line);
-    border-radius:8px;padding:8px;background:var(--bg);color:var(--ink);resize:vertical}
-  .status{font-size:13px;color:var(--accent);min-height:1.2em;margin-top:6px}
-  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
-  .day h3{margin:0 0 6px;font-size:16px}
-  .slot{display:grid;grid-template-columns:110px 1fr;gap:10px;padding:5px 0;border-top:1px solid var(--line);font-size:14px}
+  .sub{color:var(--muted);font-size:13.5px;margin:2px 0 0}
+  #bell{position:relative;flex:none;padding:8px 12px}
+  #bell .dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  #bell .dot[hidden]{display:none}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+  .stat{all:unset;box-sizing:border-box;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:var(--shadow);cursor:pointer}
+  .stat b{display:block;font-size:20px;line-height:1.1}
+  .stat span{color:var(--muted);font-size:12.5px}
+  .stat:focus-visible{outline:2px solid var(--accent)}
+  .stat.hot b{color:var(--accent)}
+
+  nav.tabs{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0 10px;display:flex;gap:6px;margin:0 -16px;padding-left:16px;padding-right:16px}
+  .tab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--panel);font-weight:500}
+  .tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  .tab .n{font-size:12px;background:var(--accent-soft);color:var(--ink);border-radius:999px;padding:0 7px;min-width:20px;text-align:center}
+  .tab[aria-selected="true"] .n{background:rgba(255,255,255,.25);color:inherit}
+
+  .toolbar{display:flex;gap:8px;margin:4px 0 10px;flex-wrap:wrap}
+  .search{flex:1 1 200px;min-height:40px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);min-width:0}
+  .chips{display:flex;gap:6px;margin:0 0 6px;flex-wrap:wrap}
+  .chip{min-height:34px;padding:4px 12px;border-radius:999px;font-size:14px}
+  .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+  h2.cat{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:20px 4px 8px;font-weight:600}
+  ul.list{list-style:none;margin:0;padding:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  li.row,li.item{padding:12px 14px;border-top:1px solid var(--line)}
+  li.row:first-child,li.item:first-child{border-top:0}
+  .row .top,.item .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .name{font-weight:600;overflow-wrap:anywhere}
+  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .badge{font-size:13px;font-weight:600;white-space:nowrap;border-radius:999px;padding:2px 10px;background:var(--accent-soft);color:var(--accent)}
+  .row.buy .badge{background:var(--warn-soft);color:var(--warn)}
+  .row.ok .name{color:var(--ink)}
+  .ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .have{display:flex;align-items:center;gap:6px;font-size:13.5px;color:var(--muted)}
+  .have input{width:96px;min-height:40px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink)}
+  .ctl button{min-height:36px;padding:6px 12px;font-size:14px}
+  .ctl .spacer{flex:1}
+
+  .shop-item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+  .got{display:flex;align-items:center;gap:8px;min-height:40px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:14px;background:var(--field)}
+  .got input{width:18px;height:18px;accent-color:var(--accent);margin:0}
+  .qty{font-weight:700;font-size:16px;white-space:nowrap;text-align:right}
+  .shop-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 4px}
+  .shop-head strong{font-size:16px}
+  .empty{color:var(--muted);text-align:center;padding:28px 12px;background:var(--panel);border:1px dashed var(--line);border-radius:14px}
+  .footer-actions{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 0;justify-content:center}
+  details.removed{margin-top:14px;color:var(--muted);font-size:14px}
+  details.removed summary{cursor:pointer;padding:6px 0}
+  details.removed .row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;box-shadow:var(--shadow)}
+  .day h3{margin:0 0 4px;font-size:16px}
+  .slot{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:6px 0;border-top:1px solid var(--line);font-size:14.5px}
   .slot:first-of-type{border-top:0}
   .slot .t{color:var(--muted);font-size:12.5px}
-  .slot .addons{color:var(--muted);font-size:13px}
-  .empty{color:var(--muted);padding:14px;text-align:center}
-  [hidden]{display:none!important}
-  @media (max-width:480px){ .slot{grid-template-columns:1fr;gap:2px} }
+  .slot .addons{color:var(--muted);font-size:13px;margin-top:2px}
+  .note{color:var(--muted);font-size:13px;margin:14px 2px}
+
+  /* dialogs */
+  dialog{border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--ink);padding:0;width:min(440px,calc(100vw - 32px));box-shadow:0 20px 50px rgba(0,0,0,.25)}
+  dialog::backdrop{background:rgba(10,20,15,.45)}
+  .dlg{padding:18px 18px 14px}
+  .dlg h2{margin:0 0 4px;font-size:18px}
+  .dlg .hint{color:var(--muted);font-size:13px;margin:0 0 14px}
+  .field{display:grid;gap:4px;margin-bottom:12px}
+  .field label,.field .lbl{font-size:13px;color:var(--muted);font-weight:500}
+  .field input,.field select{min-height:42px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink);width:100%}
+  .row2c{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .err{color:var(--warn);font-size:13px;min-height:1.2em;margin:-4px 0 6px}
+  .dlg-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
+  .dlg-actions .grow{flex:1}
+  .days{display:flex;gap:6px;flex-wrap:wrap}
+  .days button{min-height:40px;min-width:48px;padding:6px 8px}
+  .days button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+  .switch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 14px}
+  .switch input{width:22px;height:22px;accent-color:var(--accent)}
+  .perm{font-size:13px;color:var(--muted);background:var(--field);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+
+  /* banner + toast */
+  #banner{position:sticky;top:0;z-index:10;margin:12px 0 0;background:var(--accent);color:var(--accent-ink);border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+  #banner .msg{font-weight:600;flex:1 1 200px}
+  #banner button{background:rgba(255,255,255,.18);border-color:transparent;color:inherit;min-height:36px;padding:6px 12px}
+  #toast{position:fixed;left:16px;right:16px;bottom:88px;max-width:520px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:20;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  #toast button{background:transparent;border-color:transparent;color:var(--bg);text-decoration:underline;min-height:36px;padding:4px 8px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
 </head>
 <body>
-<main>
-  <h1>Kitchen Inventory</h1>
-  <p class="sub">Built from the weekly food plan. Tick what you already have; the rest is your to-buy list.</p>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Kitchen Inventory</h1>
+      <p class="sub">What you have vs. what this week's plan needs.</p>
+    </div>
+    <button id="bell" aria-haspopup="dialog" aria-label="Shopping reminders">
+      🔔 Reminders <span class="dot" id="bellDot" hidden></span>
+    </button>
+  </header>
 
-  <div class="stats" aria-live="polite">
-    <div class="stat"><b id="stTotal">0</b>ingredients</div>
-    <div class="stat"><b id="stHave">0</b>in stock</div>
-    <div class="stat"><b id="stTodo">0</b>to buy</div>
+  <div id="banner" role="status" hidden>
+    <span class="msg" id="bannerMsg"></span>
+    <button id="bannerView">View list</button>
+    <button id="bannerDismiss" aria-label="Dismiss">Dismiss</button>
   </div>
 
-  <div class="tabs" role="tablist">
-    <button role="tab" id="tabInv" aria-selected="true" aria-controls="panelInv">Ingredients</button>
-    <button role="tab" id="tabWeek" aria-selected="false" aria-controls="panelWeek">Week plan</button>
+  <div class="stats">
+    <button class="stat" id="stTotalBtn" data-go="stock"><b id="stTotal">0</b><span>ingredients</span></button>
+    <button class="stat" id="stHaveBtn" data-go="stock"><b id="stHave">0</b><span>covered</span></button>
+    <button class="stat hot" id="stTodoBtn" data-go="shop"><b id="stTodo">0</b><span>to buy</span></button>
   </div>
 
-  <section id="panelInv" role="tabpanel" aria-labelledby="tabInv">
-    <div class="controls">
-      <input type="search" id="search" placeholder="Search ingredients or dishes" aria-label="Search">
-      <div class="seg" role="group" aria-label="Filter">
-        <button data-filter="all" aria-pressed="true">All</button>
-        <button data-filter="todo" aria-pressed="false">To buy</button>
-        <button data-filter="have" aria-pressed="false">In stock</button>
-      </div>
-    </div>
-    <div id="list"></div>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" id="tab-stock" aria-controls="panel-stock" aria-selected="true" data-tab="stock">Stock</button>
+    <button class="tab" role="tab" id="tab-shop" aria-controls="panel-shop" aria-selected="false" data-tab="shop">Shopping <span class="n" id="shopBadge">0</span></button>
+    <button class="tab" role="tab" id="tab-week" aria-controls="panel-week" aria-selected="false" data-tab="week">Week plan</button>
+  </nav>
 
-    <div class="panel tobuy">
-      <div class="tobuy-head">
-        <strong>To-buy list</strong>
-        <div class="actions">
-          <button id="copyBtn">Copy list</button>
-          <button id="clearBtn">Clear all ticks</button>
-        </div>
-      </div>
-      <textarea id="tobuyText" readonly aria-label="To-buy list as text"></textarea>
-      <div class="status" id="status" role="status"></div>
+  <!-- STOCK -->
+  <section id="panel-stock" role="tabpanel" aria-labelledby="tab-stock">
+    <div class="toolbar">
+      <input class="search" id="search" type="search" placeholder="Search ingredient or dish" aria-label="Search ingredients">
+      <button class="primary" id="addBtn">+ Add ingredient</button>
     </div>
+    <div class="chips" role="group" aria-label="Filter">
+      <button class="chip" data-filter="all" aria-pressed="true">All</button>
+      <button class="chip" data-filter="buy" aria-pressed="false">Need to buy</button>
+      <button class="chip" data-filter="ok" aria-pressed="false">Covered</button>
+    </div>
+    <div id="stockList"></div>
+    <div id="stockEmpty" class="empty" hidden>Nothing matches. Try another search, or add it as a new ingredient.</div>
+    <details class="removed" id="removedBox" hidden>
+      <summary>Removed ingredients (<span id="removedCount">0</span>)</summary>
+      <div id="removedList"></div>
+    </details>
+    <div class="footer-actions">
+      <button class="danger" id="resetBtn">Reset to plan defaults</button>
+    </div>
+    <p class="note">Amounts per use are estimates from a typical home portion. Edit them to match how you cook.</p>
   </section>
 
-  <section id="panelWeek" role="tabpanel" aria-labelledby="tabWeek" hidden>
+  <!-- SHOPPING -->
+  <section id="panel-shop" role="tabpanel" aria-labelledby="tab-shop" hidden>
+    <div class="shop-head">
+      <strong id="shopCount">Nothing to buy</strong>
+      <div class="footer-actions" style="margin:0">
+        <button id="copyBtn">Copy list</button>
+        <button id="shareBtn" hidden>Share</button>
+      </div>
+    </div>
+    <div id="shopList"></div>
+    <div id="shopEmpty" class="empty" hidden>You're covered for this week. ✓</div>
+    <p class="note">Tick <b>Got it</b> when you've bought something. Its stock is updated to the weekly need.</p>
+  </section>
+
+  <!-- WEEK -->
+  <section id="panel-week" role="tabpanel" aria-labelledby="tab-week" hidden>
     <div id="week"></div>
   </section>
-</main>
+</div>
+
+<div id="toast" role="status" hidden>
+  <span id="toastMsg"></span>
+  <button id="toastUndo">Undo</button>
+</div>
+
+<!-- Add / edit ingredient -->
+<dialog id="itemDlg" aria-labelledby="itemTitle">
+  <form id="itemForm" class="dlg" novalidate>
+    <h2 id="itemTitle">Add ingredient</h2>
+    <p class="hint" id="fHint"></p>
+    <div class="field">
+      <label for="fName">Name</label>
+      <input id="fName" autocomplete="off" maxlength="60" required>
+    </div>
+    <div class="row2c">
+      <div class="field">
+        <label for="fCat">Category</label>
+        <select id="fCat"></select>
+      </div>
+      <div class="field">
+        <label for="fUnit">Unit</label>
+        <select id="fUnit">
+          <option value="g">grams (g)</option>
+          <option value="ml">millilitres (ml)</option>
+          <option value="pcs">pieces (pcs)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2c">
+      <div class="field">
+        <label for="fPer">Per use</label>
+        <input id="fPer" type="number" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="fNeed">Need per week <span style="font-weight:400">(blank = auto)</span></label>
+        <input id="fNeed" type="number" min="0" step="any" inputmode="decimal">
+      </div>
+    </div>
+    <div class="field">
+      <label for="fHave">In stock now</label>
+      <input id="fHave" type="number" min="0" step="any" inputmode="decimal">
+    </div>
+    <p class="err" id="fErr" role="alert"></p>
+    <div class="dlg-actions">
+      <button type="button" id="fDelete" class="danger" hidden>Remove</button>
+      <span class="grow"></span>
+      <button type="button" id="fCancel">Cancel</button>
+      <button type="submit" class="primary">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Reminders -->
+<dialog id="remDlg" aria-labelledby="remTitle">
+  <form id="remForm" class="dlg" novalidate>
+    <h2 id="remTitle">Shopping reminders</h2>
+    <p class="hint">A reminder shows your to-buy count with a system notification and a banner. It only fires while this page is open in a browser tab.</p>
+    <div class="switch">
+      <label for="rOn"><b>Remind me to shop</b></label>
+      <input type="checkbox" id="rOn">
+    </div>
+    <div class="field">
+      <span class="lbl" id="dayLbl">Days</span>
+      <div class="days" role="group" aria-labelledby="dayLbl" id="rDays"></div>
+    </div>
+    <div class="field">
+      <label for="rTime">Time</label>
+      <input type="time" id="rTime" required>
+    </div>
+    <div class="perm" id="rPerm"></div>
+    <p class="err" id="rErr" role="alert"></p>
+    <div class="dlg-actions">
+      <button type="button" id="rTest">Send test</button>
+      <span class="grow"></span>
+      <button type="button" id="rCancel">Cancel</button>
+      <button type="submit" class="primary">Save</button>
+    </div>
+  </form>
+</dialog>
 
 <script>
 (() => {
   "use strict";
 
   // ---------- Plan (from the weekly food plan) ----------
-  const DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const DAY_NAMES = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
   const SLOTS = [
     { key:"pre",    label:"7:15 AM · Pre-workout" },
     { key:"bf",     label:"9:30 AM · Breakfast" },
@@ -126,8 +288,8 @@
     { key:"snack",  label:"5 / 8 PM · Snacks" },
     { key:"dinner", label:"8:30 / 10 PM · Dinner" },
   ];
-  const PREWORKOUT = ["Banana", "Dates (2)", "Mixed nuts"];           // every day
-  const DAILY_ADDONS = ["Whey in milk + banana", "Chia or flaxseed", "Almonds (5)", "Walnuts (2)"]; // every breakfast
+  const PREWORKOUT = ["Banana", "Dates (2)", "Mixed nuts"];
+  const DAILY_ADDONS = ["Whey in milk + banana", "Chia or flaxseed", "Almonds (5)", "Walnuts (2)"];
 
   const PLAN = {
     Mon: { bf:["Paneer besan chilla","Whey shake","Apple"], lunch:["Rajma","Rice","Rotis","Sukhi sabzi","Raita","Salad"], snack:["Masala paneer toast","Sattu or muesli"], dinner:["Paneer rice bowl"] },
@@ -139,7 +301,6 @@
     Sun: { bf:["Masala omelette","Toast","Whey shake","Fruit"], lunch:["Dal + jeera rice","Rotis","Sukhi sabzi","Salad"], snack:["Maggie","Masala chai","Sattu or muesli"], dinner:["Palak paneer","Rotis","Rice","Salad"] },
   };
 
-  // Dish -> ingredients. Generic items ("Basic spices", "Oil") are kept coarse on purpose.
   const DISHES = {
     "Banana":["Banana"], "Dates (2)":["Dates"], "Mixed nuts":["Mixed nuts"],
     "Whey in milk + banana":["Whey protein","Milk","Banana"],
@@ -200,255 +361,578 @@
     "Chutney (green / tamarind)":6,"Bhel mix (puffed rice / sev)":6,
   };
 
-  // ---------- Derive ingredient index ----------
-  const ING = {}; // name -> { cat, days:Set, dishes:Set }
-  const missing = [];
-  DAYS.forEach(day => {
+  // Starting amount per use [qty, unit]. Estimates for a typical home portion; editable in the app.
+  const PER_USE = {
+    "Paneer":[100,"g"],"Milk":[200,"ml"],"Curd":[100,"g"],"Cheese":[20,"g"],"Eggs":[2,"pcs"],
+    "Eggs or chicken (either)":[2,"pcs"],"Whey protein":[30,"g"],"Butter":[10,"g"],"Cream":[30,"ml"],
+    "Rajma":[60,"g"],"Chole (chickpeas)":[60,"g"],"Toor dal":[60,"g"],"Moong dal":[50,"g"],"Urad dal":[50,"g"],
+    "Sprouts":[60,"g"],"Peanuts":[30,"g"],"Soya chunks":[40,"g"],
+    "Rice":[80,"g"],"Atta":[60,"g"],"Besan":[30,"g"],"Rawa":[40,"g"],"Bread":[2,"pcs"],"Pasta":[80,"g"],
+    "Maggi noodles":[1,"pcs"],"Sattu or muesli (either)":[40,"g"],
+    "Onion":[60,"g"],"Tomato":[60,"g"],"Green chilli":[5,"g"],"Ginger":[5,"g"],"Garlic":[5,"g"],"Coriander":[10,"g"],
+    "Cucumber":[50,"g"],"Carrot":[40,"g"],"Potato":[100,"g"],"Cauliflower":[150,"g"],"Bhindi (okra)":[120,"g"],
+    "Palak (spinach)":[150,"g"],"Peas":[50,"g"],"Sweet corn":[50,"g"],"Seasonal vegetables":[150,"g"],
+    "Banana":[1,"pcs"],"Apple":[1,"pcs"],"Seasonal fruit":[150,"g"],"Lemon":[1,"pcs"],"Dates":[2,"pcs"],
+    "Mixed nuts":[20,"g"],"Almonds":[5,"pcs"],"Walnuts":[2,"pcs"],"Chia seeds or flaxseed":[10,"g"],
+    "Basic spices":[5,"g"],"Cumin seeds":[3,"g"],"Chaat masala":[3,"g"],"Oil":[10,"ml"],"Ghee":[10,"g"],
+    "Sugar":[5,"g"],"Tea leaves":[3,"g"],"Coffee":[5,"g"],"Chutney (green / tamarind)":[20,"g"],
+    "Bhel mix (puffed rice / sev)":[30,"g"],
+  };
+
+  // ---------- Derive plan index: which ingredients, how often, in which dishes ----------
+  const ING = {};
+  DAY_NAMES.forEach(day => {
     SLOTS.forEach(({ key }) => {
       let dishes = key === "pre" ? PREWORKOUT.slice() : (PLAN[day][key] || []).slice();
       if (key === "bf") dishes = dishes.concat(DAILY_ADDONS);
       dishes.forEach(dish => {
-        const ings = DISHES[dish];
-        if (!ings) { missing.push(dish); return; }
-        ings.forEach(ing => {
-          if (!(ing in ING_CAT)) missing.push(ing);
-          const rec = ING[ing] || (ING[ing] = { cat: ING_CAT[ing] ?? 6, days: new Set(), dishes: new Set() });
-          rec.days.add(day);
+        (DISHES[dish] || []).forEach(ing => {
+          const rec = ING[ing] || (ING[ing] = { cat: ING_CAT[ing] ?? 6, uses: 0, dishes: new Set() });
+          rec.uses += 1;
           rec.dishes.add(dish);
         });
       });
     });
   });
-  if (missing.length) console.warn("Unmapped plan items:", [...new Set(missing)]);
   const NAMES = Object.keys(ING);
 
-  // ---------- State (per-browser convenience) ----------
-  const KEY = "kitchen-inventory-v1";
-  let state = { stock: {} };
-  try {
-    const saved = JSON.parse(localStorage.getItem(KEY));
-    if (saved && typeof saved.stock === "object") state = saved;
-  } catch (e) { /* storage unavailable: work in-memory */ }
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
-  const have = name => !!(state.stock[name] && state.stock[name].have);
+  // ---------- State (kept in this browser) ----------
+  const KEY = "kitchen-inventory-v2";
+  const DEFAULT_REM = { on:false, days:[6], time:"18:00", last:"", dismissed:"" };
+  function load() {
+    try {
+      const s = JSON.parse(localStorage.getItem(KEY));
+      if (s && typeof s === "object") {
+        return {
+          ov: s.ov || {}, del: s.del || [], custom: s.custom || [],
+          rem: Object.assign({}, DEFAULT_REM, s.rem || {}),
+        };
+      }
+    } catch (e) { /* storage unavailable: run in memory */ }
+    return { ov:{}, del:[], custom:[], rem:Object.assign({}, DEFAULT_REM) };
+  }
+  let state = load();
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 
-  let filter = "all";
+  // Edit a plan ingredient (by id = original name) or a custom one.
+  function patch(id, p) {
+    const c = state.custom.find(x => x.id === id);
+    if (c) Object.assign(c, p);
+    else state.ov[id] = Object.assign({}, state.ov[id] || {}, p);
+    save();
+  }
 
-  // ---------- Elements ----------
+  function withCalc(i) {
+    const isPcs = i.unit === "pcs";
+    let need = i.needOverride != null ? +i.needOverride : i.uses * i.perUse;
+    need = isPcs ? Math.ceil(need - 1e-9) : Math.round(need);
+    const have = Math.max(0, +i.have || 0);
+    let toBuy = Math.max(0, need - have);
+    if (isPcs) toBuy = Math.ceil(toBuy - 1e-9);
+    return Object.assign({}, i, { need, have, toBuy, auto: i.needOverride == null });
+  }
+
+  function allItems() {
+    const base = NAMES.filter(n => !state.del.includes(n)).map(n => Object.assign({
+      id:n, name:n, cat:ING[n].cat, unit:PER_USE[n][1], perUse:PER_USE[n][0],
+      needOverride:null, have:0, uses:ING[n].uses, custom:false,
+      dishes:[...ING[n].dishes],
+    }, state.ov[n] || {}));
+    const extra = state.custom.map(c => Object.assign({ uses:0, needOverride:null, have:0, dishes:[], custom:true }, c));
+    return [...base, ...extra].map(withCalc);
+  }
+
+  // ---------- Formatting ----------
+  const trim = x => +x.toFixed(2);
+  function fmt(n, unit) {
+    if (unit === "pcs") return `${Math.ceil(n - 1e-9)} pcs`;
+    if (unit === "g") return n >= 1000 ? `${trim(n / 1000)} kg` : `${Math.round(n)} g`;
+    if (unit === "ml") return n >= 1000 ? `${trim(n / 1000)} L` : `${Math.round(n)} ml`;
+    return `${n} ${unit}`;
+  }
+  const pad = n => String(n).padStart(2, "0");
+  const dayKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   const $ = id => document.getElementById(id);
-  const listEl = $("list"), searchEl = $("search");
-
-  function renderStats() {
-    const h = NAMES.filter(have).length;
-    $("stTotal").textContent = NAMES.length;
-    $("stHave").textContent = h;
-    $("stTodo").textContent = NAMES.length - h;
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
   }
 
-  function matches(name, q) {
+  // ---------- Tabs ----------
+  let currentTab = "stock";
+  function showTab(name) {
+    currentTab = name;
+    ["stock","shop","week"].forEach(t => {
+      const on = t === name;
+      $("tab-" + t).setAttribute("aria-selected", String(on));
+      $("panel-" + t).hidden = !on;
+    });
+    if (name === "shop") renderShop();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+  document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => showTab(b.dataset.go)));
+
+  // ---------- Stock list ----------
+  let filter = "all";
+  function matches(item, q) {
     if (!q) return true;
-    if (name.toLowerCase().includes(q)) return true;
-    return [...ING[name].dishes].some(d => d.toLowerCase().includes(q));
+    if (item.name.toLowerCase().includes(q)) return true;
+    return item.dishes.some(d => d.toLowerCase().includes(q));
   }
 
-  function renderList() {
-    const q = searchEl.value.trim().toLowerCase();
-    listEl.textContent = "";
-    let shown = 0;
-    CATEGORIES.forEach((catName, ci) => {
-      const names = NAMES
-        .filter(n => ING[n].cat === ci)
-        .filter(n => filter === "all" || (filter === "todo" ? !have(n) : have(n)))
-        .filter(n => matches(n, q))
-        .sort((a, b) => ING[b].days.size - ING[a].days.size || a.localeCompare(b));
-      if (!names.length) return;
-      shown += names.length;
-
-      const h = document.createElement("h2");
-      h.textContent = `${catName} · ${names.length}`;
-      const ul = document.createElement("ul");
-      ul.className = "list";
-      names.forEach(n => ul.appendChild(itemEl(n)));
-      listEl.append(h, ul);
-    });
-    if (!shown) {
-      const e = document.createElement("div");
-      e.className = "empty";
-      e.textContent = "Nothing matches that filter.";
-      listEl.appendChild(e);
-    }
-  }
-
-  function itemEl(name) {
-    const st = state.stock[name] || {};
-    const li = document.createElement("li");
-    li.className = "item" + (st.have ? " have" : "");
-    li.dataset.name = name;
-
-    const left = document.createElement("label");
-    left.className = "left";
-    const cb = document.createElement("input");
-    cb.type = "checkbox";
-    cb.checked = !!st.have;
-    cb.dataset.name = name;
-    cb.dataset.role = "have";
-    const span = document.createElement("span");
-    span.className = "name";
-    span.textContent = name;
-    left.append(cb, span);
-
-    const meta = document.createElement("span");
-    meta.className = "meta";
-    const n = ING[name].days.size;
-    meta.textContent = `${n} of 7 days`;
-
-    const row2 = document.createElement("div");
-    row2.className = "row2";
-    const qty = document.createElement("input");
-    qty.className = "qty";
-    qty.type = "text";
-    qty.placeholder = "How much you have";
-    qty.value = st.qty || "";
-    qty.dataset.name = name;
-    qty.dataset.role = "qty";
-    qty.setAttribute("aria-label", `How much ${name} you have`);
-
-    const det = document.createElement("details");
-    const sum = document.createElement("summary");
-    sum.textContent = `Used in ${ING[name].dishes.size} dish${ING[name].dishes.size > 1 ? "es" : ""}`;
-    const dl = document.createElement("ul");
-    [...ING[name].dishes].sort().forEach(d => {
-      const x = document.createElement("li");
-      x.textContent = d;
-      dl.appendChild(x);
-    });
-    det.append(sum, dl);
-    row2.append(qty, det);
-
-    li.append(left, meta, row2);
+  function rowEl(i) {
+    const li = el("li", "row " + (i.toBuy > 0 ? "buy" : "ok"));
+    li.dataset.id = i.id;
+    const top = el("div", "top");
+    top.append(el("span", "name", i.name), el("span", "badge", i.toBuy > 0 ? `Buy ${fmt(i.toBuy, i.unit)}` : "✓ Covered"));
+    const sub = [`Need ${fmt(i.need, i.unit)} / week`];
+    if (!i.custom && i.auto) sub.push(`${i.uses} uses in plan`);
+    if (!i.auto) sub.push("custom need");
+    if (i.custom) sub.push("added by you");
+    const ctl = el("div", "ctl");
+    const lab = el("label", "have");
+    lab.textContent = "Have ";
+    const inp = el("input");
+    inp.type = "number"; inp.min = "0"; inp.step = "any"; inp.inputMode = "decimal";
+    inp.value = i.have ? trim(i.have) : "0";
+    inp.dataset.role = "have";
+    inp.dataset.id = i.id;
+    inp.setAttribute("aria-label", `${i.name}: amount in stock, ${i.unit}`);
+    lab.append(inp, " " + i.unit);
+    const full = el("button", "ghost", "I have enough");
+    full.dataset.act = "full"; full.dataset.id = i.id;
+    const spacer = el("span", "spacer");
+    const edit = el("button", "ghost", "Edit");
+    edit.dataset.act = "edit"; edit.dataset.id = i.id;
+    edit.setAttribute("aria-label", `Edit ${i.name}`);
+    ctl.append(lab, full, spacer, edit);
+    li.append(top, el("div", "sub", sub.join(" · ")), ctl);
     return li;
   }
 
-  function todoText() {
-    const lines = ["Shopping list (to buy)", ""];
-    let any = false;
+  function renderStock() {
+    const q = $("search").value.trim().toLowerCase();
+    const all = allItems();
+    const list = $("stockList");
+    list.textContent = "";
+    let shown = 0;
     CATEGORIES.forEach((catName, ci) => {
-      const names = NAMES.filter(n => ING[n].cat === ci && !have(n))
-        .sort((a, b) => ING[b].days.size - ING[a].days.size || a.localeCompare(b));
-      if (!names.length) return;
-      any = true;
-      lines.push(catName + ":");
-      names.forEach(n => lines.push(`- ${n}`));
+      const rows = all
+        .filter(i => i.cat === ci)
+        .filter(i => filter === "all" || (filter === "buy" ? i.toBuy > 0 : i.toBuy === 0))
+        .filter(i => matches(i, q))
+        .sort((a, b) => (b.toBuy > 0) - (a.toBuy > 0) || a.name.localeCompare(b.name));
+      if (!rows.length) return;
+      shown += rows.length;
+      list.append(el("h2", "cat", `${catName} · ${rows.length}`));
+      const ul = el("ul", "list");
+      rows.forEach(i => ul.appendChild(rowEl(i)));
+      list.appendChild(ul);
+    });
+    $("stockEmpty").hidden = shown > 0;
+    renderRemoved(all);
+  }
+
+  function refreshRow(id) {
+    if (filter !== "all") return renderStock();
+    const item = allItems().find(x => x.id === id);
+    const old = document.querySelector(`#stockList li[data-id="${CSS.escape(id)}"]`);
+    if (item && old) old.replaceWith(rowEl(item));
+    else renderStock();
+  }
+
+  function renderRemoved() {
+    const box = $("removedBox");
+    const list = $("removedList");
+    list.textContent = "";
+    $("removedCount").textContent = state.del.length;
+    box.hidden = state.del.length === 0;
+    state.del.forEach(id => {
+      const r = el("div", "row");
+      r.append(el("span", "", id));
+      const b = el("button", "ghost", "Restore");
+      b.dataset.act = "restore"; b.dataset.id = id;
+      r.append(b);
+      list.appendChild(r);
+    });
+  }
+
+  // ---------- Summary + shopping ----------
+  function updateSummary() {
+    const all = allItems();
+    const todo = all.filter(i => i.toBuy > 0).length;
+    $("stTotal").textContent = all.length;
+    $("stHave").textContent = all.length - todo;
+    $("stTodo").textContent = todo;
+    $("shopBadge").textContent = todo;
+    $("bellDot").hidden = !state.rem.on;
+  }
+
+  function shopText() {
+    const rows = allItems().filter(i => i.toBuy > 0);
+    const lines = ["Shopping list", ""];
+    if (!rows.length) lines.push("Nothing to buy this week.");
+    CATEGORIES.forEach((c, ci) => {
+      const r = rows.filter(i => i.cat === ci).sort((a, b) => a.name.localeCompare(b.name));
+      if (!r.length) return;
+      lines.push(c + ":");
+      r.forEach(i => lines.push(`- ${i.name}: ${fmt(i.toBuy, i.unit)}`));
       lines.push("");
     });
-    if (!any) lines.push("Everything in the plan is in stock.");
     return lines.join("\n").trimEnd();
   }
 
-  function refreshTodo() { $("tobuyText").value = todoText(); }
+  function renderShop() {
+    const rows = allItems().filter(i => i.toBuy > 0);
+    const list = $("shopList");
+    list.textContent = "";
+    $("shopCount").textContent = rows.length
+      ? `${rows.length} item${rows.length > 1 ? "s" : ""} to buy` : "Nothing to buy";
+    $("shopEmpty").hidden = rows.length > 0;
+    CATEGORIES.forEach((c, ci) => {
+      const r = rows.filter(i => i.cat === ci).sort((a, b) => a.name.localeCompare(b.name));
+      if (!r.length) return;
+      list.append(el("h2", "cat", c));
+      const ul = el("ul", "list");
+      r.forEach(i => {
+        const li = el("li", "item shop-item");
+        const lab = el("label", "got");
+        const cb = el("input"); cb.type = "checkbox"; cb.dataset.act = "got"; cb.dataset.id = i.id;
+        lab.append(cb, " Got it");
+        const mid = el("div");
+        mid.append(el("div", "name", i.name), el("div", "sub", `Need ${fmt(i.need, i.unit)} · have ${fmt(i.have, i.unit)}`));
+        li.append(lab, mid, el("div", "qty", fmt(i.toBuy, i.unit)));
+        ul.appendChild(li);
+      });
+      list.appendChild(ul);
+    });
+  }
 
+  function refreshAll() {
+    updateSummary();
+    renderStock();
+    if (currentTab === "shop") renderShop();
+  }
+
+  // ---------- Toast with undo ----------
+  let toastTimer = null, undoFn = null;
+  function toast(msg, undo) {
+    $("toastMsg").textContent = msg;
+    $("toastUndo").hidden = !undo;
+    undoFn = undo || null;
+    $("toast").hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { $("toast").hidden = true; }, 6000);
+  }
+  $("toastUndo").addEventListener("click", () => {
+    if (undoFn) undoFn();
+    undoFn = null;
+    $("toast").hidden = true;
+    refreshAll();
+  });
+
+  // ---------- Events: stock ----------
+  $("stockList").addEventListener("change", e => {
+    const t = e.target;
+    if (t.dataset.role !== "have") return;
+    const v = Math.max(0, +t.value || 0);
+    patch(t.dataset.id, { have: v });
+    refreshRow(t.dataset.id);
+    updateSummary();
+  });
+
+  $("stockList").addEventListener("click", e => {
+    const b = e.target.closest("button[data-act]");
+    if (!b) return;
+    const id = b.dataset.id;
+    if (b.dataset.act === "edit") openItemDlg(id);
+    if (b.dataset.act === "full") {
+      const it = allItems().find(x => x.id === id);
+      if (!it) return;
+      const prev = it.have;
+      patch(id, { have: it.need });
+      toast(`${it.name}: stock set to ${fmt(it.need, it.unit)}`, () => patch(id, { have: prev }));
+      refreshRow(id); updateSummary();
+    }
+  });
+
+  $("removedList").addEventListener("click", e => {
+    const b = e.target.closest("button[data-act='restore']");
+    if (!b) return;
+    state.del = state.del.filter(x => x !== b.dataset.id);
+    save();
+    refreshAll();
+    toast("Ingredient restored");
+  });
+
+  document.querySelectorAll("[data-filter]").forEach(b => b.addEventListener("click", () => {
+    filter = b.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    renderStock();
+  }));
+  $("search").addEventListener("input", renderStock);
+
+  $("resetBtn").addEventListener("click", () => {
+    if (!confirm("Reset to the plan defaults? This clears your edits, removed items and stock amounts.")) return;
+    state.ov = {}; state.del = []; state.custom = [];
+    save(); refreshAll(); toast("Reset to plan defaults");
+  });
+
+  // ---------- Events: shopping ----------
+  $("shopList").addEventListener("change", e => {
+    const t = e.target;
+    if (t.dataset.act !== "got") return;
+    const it = allItems().find(x => x.id === t.dataset.id);
+    if (!it) return;
+    const prev = it.have;
+    patch(it.id, { have: it.need });
+    toast(`${it.name} marked as bought`, () => patch(it.id, { have: prev }));
+    refreshAll();
+  });
+
+  async function copyText(text, okMsg) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast(okMsg);
+    } catch (e) {
+      toast("Copy isn't available here. Select the list text and copy it.");
+    }
+  }
+  $("copyBtn").addEventListener("click", () => copyText(shopText(), "Shopping list copied"));
+  if (navigator.share) {
+    $("shareBtn").hidden = false;
+    $("shareBtn").addEventListener("click", () => {
+      navigator.share({ title: "Shopping list", text: shopText() }).catch(() => {});
+    });
+  }
+
+  // ---------- Add / edit ingredient ----------
+  let editingId = null;
+  $("fCat").innerHTML = CATEGORIES.map((c, i) => `<option value="${i}">${c}</option>`).join("");
+
+  function openItemDlg(id) {
+    editingId = id || null;
+    const i = id ? allItems().find(x => x.id === id) : null;
+    $("itemTitle").textContent = i ? "Edit ingredient" : "Add ingredient";
+    $("fName").value = i ? i.name : "";
+    $("fCat").value = i ? i.cat : 3;
+    $("fUnit").value = i ? i.unit : "g";
+    $("fPer").value = i ? trim(i.perUse) : "";
+    $("fNeed").value = i && !i.auto ? trim(i.needOverride) : "";
+    $("fHave").value = i ? trim(i.have) : "0";
+    $("fDelete").hidden = !i;
+    $("fErr").textContent = "";
+    $("fHint").textContent = i && i.custom
+      ? "Added by you. Set the weekly need directly."
+      : "Auto need = uses in the plan × amount per use. Enter a weekly need to override it.";
+    $("itemDlg").showModal();
+    $("fName").focus();
+  }
+
+  $("addBtn").addEventListener("click", () => openItemDlg(null));
+  $("fCancel").addEventListener("click", () => $("itemDlg").close());
+
+  $("itemForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("fName").value.trim();
+    if (!name) { $("fErr").textContent = "Give it a name."; $("fName").focus(); return; }
+    const clash = allItems().some(x => x.id !== editingId && x.name.toLowerCase() === name.toLowerCase());
+    if (clash) { $("fErr").textContent = "You already have an ingredient with that name."; return; }
+    const needRaw = $("fNeed").value.trim();
+    const fields = {
+      name,
+      cat: +$("fCat").value,
+      unit: $("fUnit").value,
+      perUse: Math.max(0, +$("fPer").value || 0),
+      needOverride: needRaw === "" ? null : Math.max(0, +needRaw || 0),
+      have: Math.max(0, +$("fHave").value || 0),
+    };
+    if (editingId === null) {
+      state.custom.push(Object.assign({ id: "c" + Date.now() }, fields));
+    } else {
+      patch(editingId, fields);
+    }
+    save();
+    $("itemDlg").close();
+    refreshAll();
+    toast(editingId === null ? `Added ${name}` : `Saved ${name}`);
+  });
+
+  $("fDelete").addEventListener("click", () => {
+    const it = allItems().find(x => x.id === editingId);
+    if (!it) return;
+    if (!confirm(`Remove ${it.name} from your list?`)) return;
+    let undo;
+    if (it.custom) {
+      const copy = state.custom.find(c => c.id === it.id);
+      state.custom = state.custom.filter(c => c.id !== it.id);
+      undo = () => { state.custom.push(copy); };
+    } else {
+      state.del.push(it.id);
+      undo = () => { state.del = state.del.filter(x => x !== it.id); };
+    }
+    save();
+    $("itemDlg").close();
+    refreshAll();
+    toast(`Removed ${it.name}`, undo);
+  });
+
+  // ---------- Reminders ----------
+  const notifSupported = "Notification" in window;
+  let draftDays = [];
+  const dayBox = $("rDays");
+  DAY_NAMES.forEach((d, idx) => {
+    const b = el("button", "", d);
+    b.type = "button";
+    b.dataset.day = idx;
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => {
+      const on = draftDays.includes(idx);
+      draftDays = on ? draftDays.filter(x => x !== idx) : draftDays.concat(idx).sort();
+      b.setAttribute("aria-pressed", String(!on));
+      $("rErr").textContent = "";
+    });
+    dayBox.appendChild(b);
+  });
+
+  function permText() {
+    if (!notifSupported) return "This browser can't show system notifications. You'll still get the in-page banner while the page is open.";
+    if (Notification.permission === "granted") return "System notifications are on.";
+    if (Notification.permission === "denied") return "Notifications are blocked for this site. Allow them in your browser settings to get them; the banner still works.";
+    return "Saving with reminders on will ask your browser for notification permission.";
+  }
+
+  function nextReminderText(r) {
+    if (!r.on || !r.days.length) return "Off";
+    const now = new Date();
+    for (let k = 0; k < 8; k++) {
+      const d = new Date(now);
+      d.setDate(now.getDate() + k);
+      const [h, m] = r.time.split(":").map(Number);
+      d.setHours(h, m, 0, 0);
+      const idx = (d.getDay() + 6) % 7;
+      if (d > now && r.days.includes(idx)) return `Next: ${DAY_NAMES[idx]} ${r.time}`;
+    }
+    return "Scheduled";
+  }
+
+  function openRem() {
+    const r = state.rem;
+    $("rOn").checked = r.on;
+    $("rTime").value = r.time;
+    draftDays = r.days.slice();
+    dayBox.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(draftDays.includes(+b.dataset.day))));
+    $("rPerm").textContent = permText() + " · " + nextReminderText(r);
+    $("rErr").textContent = "";
+    $("remDlg").showModal();
+  }
+  $("bell").addEventListener("click", openRem);
+  $("rCancel").addEventListener("click", () => $("remDlg").close());
+
+  $("remForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const on = $("rOn").checked;
+    if (on && !draftDays.length) { $("rErr").textContent = "Pick at least one day."; return; }
+    if (!$("rTime").value) { $("rErr").textContent = "Pick a time."; return; }
+    state.rem = Object.assign({}, state.rem, { on, days: draftDays.slice(), time: $("rTime").value });
+    save();
+    if (on && notifSupported && Notification.permission === "default") {
+      Notification.requestPermission().catch(() => {});
+    }
+    $("remDlg").close();
+    updateSummary();
+    toast(on ? `Reminders on · ${nextReminderText(state.rem)}` : "Reminders off");
+    tick();
+  });
+
+  $("rTest").addEventListener("click", () => {
+    if (notifSupported && Notification.permission === "default") Notification.requestPermission().catch(() => {});
+    const n = allItems().filter(i => i.toBuy > 0).length;
+    notify(`Test: ${n} item${n === 1 ? "" : "s"} to buy`);
+    showBanner(`Test reminder: ${n} item${n === 1 ? "" : "s"} to buy`);
+  });
+
+  // Banner
+  function showBanner(msg) {
+    $("bannerMsg").textContent = msg;
+    $("banner").hidden = false;
+  }
+  $("bannerView").addEventListener("click", () => { $("banner").hidden = true; showTab("shop"); });
+  $("bannerDismiss").addEventListener("click", () => {
+    $("banner").hidden = true;
+    state.rem.dismissed = dayKey();
+    save();
+  });
+
+  function notify(body) {
+    if (!notifSupported || Notification.permission !== "granted") return;
+    try { new Notification("Kitchen · shopping reminder", { body, tag: "kitchen-shopping" }); } catch (e) {}
+  }
+
+  function dueSummary() {
+    const rows = allItems().filter(i => i.toBuy > 0).sort((a, b) => b.toBuy / (b.need || 1) - a.toBuy / (a.need || 1));
+    if (!rows.length) return null;
+    const names = rows.slice(0, 3).map(i => i.name).join(", ");
+    const more = rows.length > 3 ? ` +${rows.length - 3} more` : "";
+    return `Shopping time: ${rows.length} to buy (${names}${more})`;
+  }
+
+  // Fires once per scheduled day, while the page is open.
+  function tick() {
+    const r = state.rem;
+    if (!r.on || !r.days.length) return;
+    const now = new Date();
+    const idx = (now.getDay() + 6) % 7;
+    const hhmm = pad(now.getHours()) + ":" + pad(now.getMinutes());
+    const key = dayKey(now);
+    if (r.days.includes(idx) && hhmm >= r.time && r.last !== key) {
+      const msg = dueSummary();
+      r.last = key;
+      save();
+      if (msg) {
+        showBanner(msg);
+        notify(msg);
+      }
+    }
+  }
+
+  // On load: if today's reminder already fired and wasn't dismissed, keep the banner visible.
+  function restoreBanner() {
+    const r = state.rem;
+    if (!r.on || r.last !== dayKey() || r.dismissed === dayKey()) return;
+    const msg = dueSummary();
+    if (msg) showBanner(msg);
+  }
+
+  // ---------- Week plan (read-only) ----------
   function renderWeek() {
     const wk = $("week");
     wk.textContent = "";
-    DAYS.forEach(day => {
-      const card = document.createElement("article");
-      card.className = "day";
-      const h = document.createElement("h3");
-      h.textContent = day;
-      card.appendChild(h);
+    DAY_NAMES.forEach(day => {
+      const card = el("article", "day");
+      card.append(el("h3", "", day));
       SLOTS.forEach(({ key, label }) => {
-        const row = document.createElement("div");
-        row.className = "slot";
-        const t = document.createElement("div");
-        t.className = "t";
-        t.textContent = label;
-        const body = document.createElement("div");
+        const row = el("div", "slot");
+        const body = el("div");
         const items = key === "pre" ? PREWORKOUT : (PLAN[day][key] || []);
         body.textContent = items.join(" + ");
-        if (key === "bf") {
-          const a = document.createElement("div");
-          a.className = "addons";
-          a.textContent = "+ daily: " + DAILY_ADDONS.join(" · ");
-          body.appendChild(a);
-        }
-        row.append(t, body);
+        if (key === "bf") body.append(el("div", "addons", "+ daily: " + DAILY_ADDONS.join(" · ")));
+        row.append(el("div", "t", label), body);
         card.appendChild(row);
       });
       wk.appendChild(card);
     });
   }
 
-  function refreshAll() {
-    renderStats();
-    renderList();
-    refreshTodo();
-  }
-
-  // ---------- Events ----------
-  listEl.addEventListener("change", e => {
-    const t = e.target;
-    const name = t.dataset.name;
-    if (!name) return;
-    state.stock[name] = state.stock[name] || {};
-    if (t.dataset.role === "have") {
-      state.stock[name].have = t.checked;
-      const li = t.closest("li.item");
-      if (li) li.classList.toggle("have", t.checked);
-      save();
-      renderStats();
-      refreshTodo();
-      if (filter !== "all") renderList();
-    } else if (t.dataset.role === "qty") {
-      state.stock[name].qty = t.value.trim();
-      save();
-    }
-  });
-
-  searchEl.addEventListener("input", renderList);
-
-  document.querySelectorAll("[data-filter]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      filter = btn.dataset.filter;
-      document.querySelectorAll("[data-filter]").forEach(b =>
-        b.setAttribute("aria-pressed", String(b === btn)));
-      renderList();
-    });
-  });
-
-  function showTab(which) {
-    const inv = which === "inv";
-    $("tabInv").setAttribute("aria-selected", String(inv));
-    $("tabWeek").setAttribute("aria-selected", String(!inv));
-    $("panelInv").hidden = !inv;
-    $("panelWeek").hidden = inv;
-  }
-  $("tabInv").addEventListener("click", () => showTab("inv"));
-  $("tabWeek").addEventListener("click", () => showTab("week"));
-
-  $("copyBtn").addEventListener("click", async () => {
-    const txt = todoText();
-    const status = $("status");
-    try {
-      await navigator.clipboard.writeText(txt);
-      status.textContent = "Copied to clipboard.";
-    } catch (e) {
-      $("tobuyText").focus();
-      $("tobuyText").select();
-      status.textContent = "Copy isn't available here. The text is selected; copy it manually.";
-    }
-  });
-
-  $("clearBtn").addEventListener("click", () => {
-    if (!confirm("Clear all ticks and quantities?")) return;
-    state = { stock: {} };
-    save();
-    $("status").textContent = "";
-    refreshAll();
-  });
-
   // ---------- Init ----------
   renderWeek();
   refreshAll();
+  restoreBanner();
+  tick();
+  setInterval(tick, 30000);
 })();
 </script>
 </body>
