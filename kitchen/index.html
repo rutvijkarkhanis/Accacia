@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kitchen Inventory</title>
+<style>
+  :root{
+    --bg:#f6f7f5; --panel:#ffffff; --ink:#1a2b22; --muted:#5f6f66;
+    --line:#e2e7e2; --accent:#1f7a4d; --accent-soft:#e8f3ec; --warn:#8a5a00;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){--bg:#10140f; --panel:#181d16; --ink:#e8efe8; --muted:#93a396;
+      --line:#2a332a; --accent:#4fbb84; --accent-soft:#16281d; --warn:#e0b060;}
+  }
+  :root[data-theme="dark"]{--bg:#10140f;--panel:#181d16;--ink:#e8efe8;--muted:#93a396;
+    --line:#2a332a;--accent:#4fbb84;--accent-soft:#16281d;--warn:#e0b060;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  main{max-width:760px;margin:0 auto;padding:18px 16px 60px}
+  h1{margin:0;font-size:22px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:13.5px;margin:3px 0 14px}
+  .stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--muted)}
+  .stat b{color:var(--ink);font-size:17px;margin-right:4px}
+  .tabs{display:flex;gap:6px;margin-bottom:12px}
+  button,.seg button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+    border-radius:8px;padding:7px 12px}
+  button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .tabs button[aria-selected="true"],.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  input[type="search"]{flex:1 1 220px;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;
+    background:var(--panel);color:var(--ink);min-width:0}
+  .seg{display:flex;gap:6px}
+  .seg button{padding:7px 10px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:22px 0 8px}
+  ul.list{list-style:none;margin:0;padding:0;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  li.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:10px 12px;border-top:1px solid var(--line)}
+  li.item:first-child{border-top:0}
+  li.item.have .name{color:var(--muted);text-decoration:line-through}
+  .left{display:flex;align-items:center;gap:10px;min-width:0}
+  .left input[type="checkbox"]{width:18px;height:18px;accent-color:var(--accent);flex:none;margin:0}
+  .name{overflow-wrap:anywhere}
+  .meta{color:var(--muted);font-size:12.5px;white-space:nowrap;align-self:center}
+  .row2{grid-column:1/-1;display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding-left:28px}
+  .qty{font:inherit;font-size:13.5px;padding:5px 8px;border:1px solid var(--line);border-radius:7px;
+    background:var(--bg);color:var(--ink);width:170px;max-width:100%}
+  details{font-size:13px;color:var(--muted)}
+  details summary{cursor:pointer}
+  details ul{margin:6px 0 0;padding-left:16px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .tobuy{margin-top:20px}
+  .tobuy-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .tobuy-head strong{font-size:15px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  textarea{width:100%;min-height:120px;font:13.5px/1.5 ui-monospace,Menlo,Consolas,monospace;border:1px solid var(--line);
+    border-radius:8px;padding:8px;background:var(--bg);color:var(--ink);resize:vertical}
+  .status{font-size:13px;color:var(--accent);min-height:1.2em;margin-top:6px}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+  .day h3{margin:0 0 6px;font-size:16px}
+  .slot{display:grid;grid-template-columns:110px 1fr;gap:10px;padding:5px 0;border-top:1px solid var(--line);font-size:14px}
+  .slot:first-of-type{border-top:0}
+  .slot .t{color:var(--muted);font-size:12.5px}
+  .slot .addons{color:var(--muted);font-size:13px}
+  .empty{color:var(--muted);padding:14px;text-align:center}
+  [hidden]{display:none!important}
+  @media (max-width:480px){ .slot{grid-template-columns:1fr;gap:2px} }
+</style>
+</head>
+<body>
+<main>
+  <h1>Kitchen Inventory</h1>
+  <p class="sub">Built from the weekly food plan. Tick what you already have; the rest is your to-buy list.</p>
+
+  <div class="stats" aria-live="polite">
+    <div class="stat"><b id="stTotal">0</b>ingredients</div>
+    <div class="stat"><b id="stHave">0</b>in stock</div>
+    <div class="stat"><b id="stTodo">0</b>to buy</div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tabInv" aria-selected="true" aria-controls="panelInv">Ingredients</button>
+    <button role="tab" id="tabWeek" aria-selected="false" aria-controls="panelWeek">Week plan</button>
+  </div>
+
+  <section id="panelInv" role="tabpanel" aria-labelledby="tabInv">
+    <div class="controls">
+      <input type="search" id="search" placeholder="Search ingredients or dishes" aria-label="Search">
+      <div class="seg" role="group" aria-label="Filter">
+        <button data-filter="all" aria-pressed="true">All</button>
+        <button data-filter="todo" aria-pressed="false">To buy</button>
+        <button data-filter="have" aria-pressed="false">In stock</button>
+      </div>
+    </div>
+    <div id="list"></div>
+
+    <div class="panel tobuy">
+      <div class="tobuy-head">
+        <strong>To-buy list</strong>
+        <div class="actions">
+          <button id="copyBtn">Copy list</button>
+          <button id="clearBtn">Clear all ticks</button>
+        </div>
+      </div>
+      <textarea id="tobuyText" readonly aria-label="To-buy list as text"></textarea>
+      <div class="status" id="status" role="status"></div>
+    </div>
+  </section>
+
+  <section id="panelWeek" role="tabpanel" aria-labelledby="tabWeek" hidden>
+    <div id="week"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------- Plan (from the weekly food plan) ----------
+  const DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const SLOTS = [
+    { key:"pre",    label:"7:15 AM · Pre-workout" },
+    { key:"bf",     label:"9:30 AM · Breakfast" },
+    { key:"lunch",  label:"1:30 PM · Lunch" },
+    { key:"snack",  label:"5 / 8 PM · Snacks" },
+    { key:"dinner", label:"8:30 / 10 PM · Dinner" },
+  ];
+  const PREWORKOUT = ["Banana", "Dates (2)", "Mixed nuts"];           // every day
+  const DAILY_ADDONS = ["Whey in milk + banana", "Chia or flaxseed", "Almonds (5)", "Walnuts (2)"]; // every breakfast
+
+  const PLAN = {
+    Mon: { bf:["Paneer besan chilla","Whey shake","Apple"], lunch:["Rajma","Rice","Rotis","Sukhi sabzi","Raita","Salad"], snack:["Masala paneer toast","Sattu or muesli"], dinner:["Paneer rice bowl"] },
+    Tue: { bf:["Masala egg bhurji","Bread","Whey shake","Fruit"], lunch:["Chole","Rotis","Rice","Sukhi sabzi","Curd","Salad"], snack:["Masala peanut chaat","Sattu or muesli"], dinner:["Egg / chicken curry","Rotis","Rice","Salad"] },
+    Wed: { bf:["Paneer paratha","Curd","Whey shake","Fruit"], lunch:["Dal tadka","Rice","Rotis","Bhindi","Salad"], snack:["Sprouts bhel","Sattu or muesli"], dinner:["Sprouts sabzi","Rotis","Salad"] },
+    Thu: { bf:["Moong dal paneer chilla","Whey shake","Fruit"], lunch:["Kadhi","Rice","Rotis","Sukhi aloo gobhi","Salad"], snack:["Cheese corn sandwich","Sattu or muesli"], dinner:["Paneer bhurji","Rotis","Salad"] },
+    Fri: { bf:["Paneer cheese sandwich","Whey shake","Fruit"], lunch:["Soya pulao","Rotis","Sukhi sabzi","Raita","Salad"], snack:["Pasta","Cold coffee","Sattu or muesli"], dinner:["Mix dal","Rotis","Rice","Sukhi sabzi","Salad"] },
+    Sat: { bf:["Paneer rawa chilla","Whey shake","Fruit"], lunch:["Dal makhani","Rice","Rotis","Sukhi sabzi","Salad"], snack:["Paneer dish","Masala chai","Sattu or muesli"], dinner:["Namkeen chawal","Raita","Salad"] },
+    Sun: { bf:["Masala omelette","Toast","Whey shake","Fruit"], lunch:["Dal + jeera rice","Rotis","Sukhi sabzi","Salad"], snack:["Maggie","Masala chai","Sattu or muesli"], dinner:["Palak paneer","Rotis","Rice","Salad"] },
+  };
+
+  // Dish -> ingredients. Generic items ("Basic spices", "Oil") are kept coarse on purpose.
+  const DISHES = {
+    "Banana":["Banana"], "Dates (2)":["Dates"], "Mixed nuts":["Mixed nuts"],
+    "Whey in milk + banana":["Whey protein","Milk","Banana"],
+    "Chia or flaxseed":["Chia seeds or flaxseed"], "Almonds (5)":["Almonds"], "Walnuts (2)":["Walnuts"],
+    "Paneer besan chilla":["Paneer","Besan","Onion","Green chilli","Coriander","Basic spices","Oil"],
+    "Whey shake":["Whey protein","Milk"], "Apple":["Apple"],
+    "Masala egg bhurji":["Eggs","Onion","Tomato","Green chilli","Coriander","Basic spices","Oil"],
+    "Bread":["Bread"], "Toast":["Bread"], "Fruit":["Seasonal fruit"],
+    "Paneer paratha":["Paneer","Atta","Basic spices","Ghee"], "Curd":["Curd"],
+    "Moong dal paneer chilla":["Moong dal","Paneer","Onion","Green chilli","Coriander","Basic spices","Oil"],
+    "Paneer cheese sandwich":["Paneer","Cheese","Bread","Tomato","Onion","Butter"],
+    "Paneer rawa chilla":["Paneer","Rawa","Onion","Green chilli","Coriander","Basic spices","Oil"],
+    "Masala omelette":["Eggs","Onion","Tomato","Green chilli","Basic spices","Oil"],
+    "Rajma":["Rajma","Onion","Tomato","Ginger","Garlic","Basic spices","Oil"],
+    "Chole":["Chole (chickpeas)","Onion","Tomato","Ginger","Garlic","Basic spices","Oil"],
+    "Dal tadka":["Toor dal","Tomato","Onion","Ghee","Cumin seeds","Basic spices"],
+    "Kadhi":["Besan","Curd","Ghee","Basic spices"],
+    "Soya pulao":["Soya chunks","Rice","Peas","Onion","Basic spices","Oil"],
+    "Dal makhani":["Urad dal","Rajma","Butter","Cream","Tomato","Onion","Ginger","Garlic","Basic spices"],
+    "Dal + jeera rice":["Toor dal","Rice","Cumin seeds","Ghee","Basic spices"],
+    "Rice":["Rice"], "Rotis":["Atta"],
+    "Sukhi sabzi":["Seasonal vegetables","Onion","Basic spices","Oil"],
+    "Bhindi":["Bhindi (okra)","Basic spices","Oil"],
+    "Sukhi aloo gobhi":["Potato","Cauliflower","Basic spices","Oil"],
+    "Raita":["Curd","Cucumber","Cumin seeds"],
+    "Salad":["Cucumber","Tomato","Onion","Carrot","Lemon"],
+    "Masala paneer toast":["Paneer","Bread","Onion","Tomato","Basic spices","Butter"],
+    "Sattu or muesli":["Sattu or muesli (either)"],
+    "Masala peanut chaat":["Peanuts","Onion","Tomato","Green chilli","Chaat masala","Lemon","Coriander"],
+    "Sprouts bhel":["Sprouts","Onion","Tomato","Chutney (green / tamarind)","Bhel mix (puffed rice / sev)","Lemon"],
+    "Cheese corn sandwich":["Bread","Cheese","Sweet corn","Butter"],
+    "Pasta":["Pasta"], "Cold coffee":["Coffee","Milk","Sugar"],
+    "Paneer dish":["Paneer","Onion","Tomato","Basic spices","Oil"],
+    "Masala chai":["Tea leaves","Milk","Sugar","Ginger","Basic spices"],
+    "Maggie":["Maggi noodles","Onion"],
+    "Paneer rice bowl":["Paneer","Rice","Seasonal vegetables","Basic spices","Oil"],
+    "Egg / chicken curry":["Eggs or chicken (either)","Onion","Tomato","Ginger","Garlic","Basic spices","Oil"],
+    "Sprouts sabzi":["Sprouts","Onion","Tomato","Basic spices","Oil"],
+    "Paneer bhurji":["Paneer","Onion","Tomato","Green chilli","Basic spices","Oil"],
+    "Mix dal":["Toor dal","Moong dal","Onion","Tomato","Ghee","Basic spices"],
+    "Namkeen chawal":["Rice","Peas","Peanuts","Basic spices","Oil"],
+    "Palak paneer":["Palak (spinach)","Paneer","Onion","Tomato","Ginger","Garlic","Cream","Basic spices","Oil"],
+  };
+
+  const CATEGORIES = [
+    "Dairy & protein", "Dals, legumes & sprouts", "Grains & flours",
+    "Vegetables & herbs", "Fruit", "Nuts & seeds", "Spices, oils & pantry",
+  ];
+  const ING_CAT = {
+    "Paneer":0,"Milk":0,"Curd":0,"Cheese":0,"Eggs":0,"Eggs or chicken (either)":0,"Whey protein":0,"Butter":0,"Cream":0,
+    "Rajma":1,"Chole (chickpeas)":1,"Toor dal":1,"Moong dal":1,"Urad dal":1,"Sprouts":1,"Peanuts":1,"Soya chunks":1,
+    "Rice":2,"Atta":2,"Besan":2,"Rawa":2,"Bread":2,"Pasta":2,"Maggi noodles":2,"Sattu or muesli (either)":2,
+    "Onion":3,"Tomato":3,"Green chilli":3,"Ginger":3,"Garlic":3,"Coriander":3,"Cucumber":3,"Carrot":3,"Potato":3,
+    "Cauliflower":3,"Bhindi (okra)":3,"Palak (spinach)":3,"Peas":3,"Sweet corn":3,"Seasonal vegetables":3,
+    "Banana":4,"Apple":4,"Seasonal fruit":4,"Lemon":4,"Dates":4,
+    "Mixed nuts":5,"Almonds":5,"Walnuts":5,"Chia seeds or flaxseed":5,
+    "Basic spices":6,"Cumin seeds":6,"Chaat masala":6,"Oil":6,"Ghee":6,"Sugar":6,"Tea leaves":6,"Coffee":6,
+    "Chutney (green / tamarind)":6,"Bhel mix (puffed rice / sev)":6,
+  };
+
+  // ---------- Derive ingredient index ----------
+  const ING = {}; // name -> { cat, days:Set, dishes:Set }
+  const missing = [];
+  DAYS.forEach(day => {
+    SLOTS.forEach(({ key }) => {
+      let dishes = key === "pre" ? PREWORKOUT.slice() : (PLAN[day][key] || []).slice();
+      if (key === "bf") dishes = dishes.concat(DAILY_ADDONS);
+      dishes.forEach(dish => {
+        const ings = DISHES[dish];
+        if (!ings) { missing.push(dish); return; }
+        ings.forEach(ing => {
+          if (!(ing in ING_CAT)) missing.push(ing);
+          const rec = ING[ing] || (ING[ing] = { cat: ING_CAT[ing] ?? 6, days: new Set(), dishes: new Set() });
+          rec.days.add(day);
+          rec.dishes.add(dish);
+        });
+      });
+    });
+  });
+  if (missing.length) console.warn("Unmapped plan items:", [...new Set(missing)]);
+  const NAMES = Object.keys(ING);
+
+  // ---------- State (per-browser convenience) ----------
+  const KEY = "kitchen-inventory-v1";
+  let state = { stock: {} };
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY));
+    if (saved && typeof saved.stock === "object") state = saved;
+  } catch (e) { /* storage unavailable: work in-memory */ }
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+  const have = name => !!(state.stock[name] && state.stock[name].have);
+
+  let filter = "all";
+
+  // ---------- Elements ----------
+  const $ = id => document.getElementById(id);
+  const listEl = $("list"), searchEl = $("search");
+
+  function renderStats() {
+    const h = NAMES.filter(have).length;
+    $("stTotal").textContent = NAMES.length;
+    $("stHave").textContent = h;
+    $("stTodo").textContent = NAMES.length - h;
+  }
+
+  function matches(name, q) {
+    if (!q) return true;
+    if (name.toLowerCase().includes(q)) return true;
+    return [...ING[name].dishes].some(d => d.toLowerCase().includes(q));
+  }
+
+  function renderList() {
+    const q = searchEl.value.trim().toLowerCase();
+    listEl.textContent = "";
+    let shown = 0;
+    CATEGORIES.forEach((catName, ci) => {
+      const names = NAMES
+        .filter(n => ING[n].cat === ci)
+        .filter(n => filter === "all" || (filter === "todo" ? !have(n) : have(n)))
+        .filter(n => matches(n, q))
+        .sort((a, b) => ING[b].days.size - ING[a].days.size || a.localeCompare(b));
+      if (!names.length) return;
+      shown += names.length;
+
+      const h = document.createElement("h2");
+      h.textContent = `${catName} · ${names.length}`;
+      const ul = document.createElement("ul");
+      ul.className = "list";
+      names.forEach(n => ul.appendChild(itemEl(n)));
+      listEl.append(h, ul);
+    });
+    if (!shown) {
+      const e = document.createElement("div");
+      e.className = "empty";
+      e.textContent = "Nothing matches that filter.";
+      listEl.appendChild(e);
+    }
+  }
+
+  function itemEl(name) {
+    const st = state.stock[name] || {};
+    const li = document.createElement("li");
+    li.className = "item" + (st.have ? " have" : "");
+    li.dataset.name = name;
+
+    const left = document.createElement("label");
+    left.className = "left";
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = !!st.have;
+    cb.dataset.name = name;
+    cb.dataset.role = "have";
+    const span = document.createElement("span");
+    span.className = "name";
+    span.textContent = name;
+    left.append(cb, span);
+
+    const meta = document.createElement("span");
+    meta.className = "meta";
+    const n = ING[name].days.size;
+    meta.textContent = `${n} of 7 days`;
+
+    const row2 = document.createElement("div");
+    row2.className = "row2";
+    const qty = document.createElement("input");
+    qty.className = "qty";
+    qty.type = "text";
+    qty.placeholder = "How much you have";
+    qty.value = st.qty || "";
+    qty.dataset.name = name;
+    qty.dataset.role = "qty";
+    qty.setAttribute("aria-label", `How much ${name} you have`);
+
+    const det = document.createElement("details");
+    const sum = document.createElement("summary");
+    sum.textContent = `Used in ${ING[name].dishes.size} dish${ING[name].dishes.size > 1 ? "es" : ""}`;
+    const dl = document.createElement("ul");
+    [...ING[name].dishes].sort().forEach(d => {
+      const x = document.createElement("li");
+      x.textContent = d;
+      dl.appendChild(x);
+    });
+    det.append(sum, dl);
+    row2.append(qty, det);
+
+    li.append(left, meta, row2);
+    return li;
+  }
+
+  function todoText() {
+    const lines = ["Shopping list (to buy)", ""];
+    let any = false;
+    CATEGORIES.forEach((catName, ci) => {
+      const names = NAMES.filter(n => ING[n].cat === ci && !have(n))
+        .sort((a, b) => ING[b].days.size - ING[a].days.size || a.localeCompare(b));
+      if (!names.length) return;
+      any = true;
+      lines.push(catName + ":");
+      names.forEach(n => lines.push(`- ${n}`));
+      lines.push("");
+    });
+    if (!any) lines.push("Everything in the plan is in stock.");
+    return lines.join("\n").trimEnd();
+  }
+
+  function refreshTodo() { $("tobuyText").value = todoText(); }
+
+  function renderWeek() {
+    const wk = $("week");
+    wk.textContent = "";
+    DAYS.forEach(day => {
+      const card = document.createElement("article");
+      card.className = "day";
+      const h = document.createElement("h3");
+      h.textContent = day;
+      card.appendChild(h);
+      SLOTS.forEach(({ key, label }) => {
+        const row = document.createElement("div");
+        row.className = "slot";
+        const t = document.createElement("div");
+        t.className = "t";
+        t.textContent = label;
+        const body = document.createElement("div");
+        const items = key === "pre" ? PREWORKOUT : (PLAN[day][key] || []);
+        body.textContent = items.join(" + ");
+        if (key === "bf") {
+          const a = document.createElement("div");
+          a.className = "addons";
+          a.textContent = "+ daily: " + DAILY_ADDONS.join(" · ");
+          body.appendChild(a);
+        }
+        row.append(t, body);
+        card.appendChild(row);
+      });
+      wk.appendChild(card);
+    });
+  }
+
+  function refreshAll() {
+    renderStats();
+    renderList();
+    refreshTodo();
+  }
+
+  // ---------- Events ----------
+  listEl.addEventListener("change", e => {
+    const t = e.target;
+    const name = t.dataset.name;
+    if (!name) return;
+    state.stock[name] = state.stock[name] || {};
+    if (t.dataset.role === "have") {
+      state.stock[name].have = t.checked;
+      const li = t.closest("li.item");
+      if (li) li.classList.toggle("have", t.checked);
+      save();
+      renderStats();
+      refreshTodo();
+      if (filter !== "all") renderList();
+    } else if (t.dataset.role === "qty") {
+      state.stock[name].qty = t.value.trim();
+      save();
+    }
+  });
+
+  searchEl.addEventListener("input", renderList);
+
+  document.querySelectorAll("[data-filter]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      filter = btn.dataset.filter;
+      document.querySelectorAll("[data-filter]").forEach(b =>
+        b.setAttribute("aria-pressed", String(b === btn)));
+      renderList();
+    });
+  });
+
+  function showTab(which) {
+    const inv = which === "inv";
+    $("tabInv").setAttribute("aria-selected", String(inv));
+    $("tabWeek").setAttribute("aria-selected", String(!inv));
+    $("panelInv").hidden = !inv;
+    $("panelWeek").hidden = inv;
+  }
+  $("tabInv").addEventListener("click", () => showTab("inv"));
+  $("tabWeek").addEventListener("click", () => showTab("week"));
+
+  $("copyBtn").addEventListener("click", async () => {
+    const txt = todoText();
+    const status = $("status");
+    try {
+      await navigator.clipboard.writeText(txt);
+      status.textContent = "Copied to clipboard.";
+    } catch (e) {
+      $("tobuyText").focus();
+      $("tobuyText").select();
+      status.textContent = "Copy isn't available here. The text is selected; copy it manually.";
+    }
+  });
+
+  $("clearBtn").addEventListener("click", () => {
+    if (!confirm("Clear all ticks and quantities?")) return;
+    state = { stock: {} };
+    save();
+    $("status").textContent = "";
+    refreshAll();
+  });
+
+  // ---------- Init ----------
+  renderWeek();
+  refreshAll();
+})();
+</script>
+</body>
+</html>
