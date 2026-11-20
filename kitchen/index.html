@@ -177,6 +177,10 @@
 
   <!-- SHOPPING -->
   <section id="panel-shop" role="tabpanel" aria-labelledby="tab-shop" hidden>
+    <div class="chips" role="group" aria-label="List view">
+      <button class="chip" data-shopmode="buy" aria-pressed="true">To buy now</button>
+      <button class="chip" data-shopmode="all" aria-pressed="false">General list (full week)</button>
+    </div>
     <div class="shop-head">
       <strong id="shopCount">Nothing to buy</strong>
       <div class="footer-actions" style="margin:0">
@@ -571,33 +575,54 @@
     $("bellDot").hidden = !state.rem.on;
   }
 
-  function shopText() {
-    const rows = allItems().filter(i => i.toBuy > 0);
-    const lines = ["Shopping list", ""];
-    if (!rows.length) lines.push("Nothing to buy this week.");
+  // mode: "buy" = still to buy this week; "all" = general list of everything the plan needs
+  let shopMode = "buy";
+  function shopRows(mode) {
+    return allItems()
+      .filter(i => (mode === "buy" ? i.toBuy > 0 : i.need > 0))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  function shopText(mode = shopMode) {
+    const rows = shopRows(mode);
+    const title = mode === "buy" ? "Shopping list (to buy this week)" : "General list (full week)";
+    const lines = [title, ""];
+    if (!rows.length) lines.push(mode === "buy" ? "Nothing to buy this week." : "No items yet.");
     CATEGORIES.forEach((c, ci) => {
-      const r = rows.filter(i => i.cat === ci).sort((a, b) => a.name.localeCompare(b.name));
+      const r = rows.filter(i => i.cat === ci);
       if (!r.length) return;
       lines.push(c + ":");
-      r.forEach(i => lines.push(`- ${i.name}: ${fmt(i.toBuy, i.unit)}`));
+      r.forEach(i => lines.push(mode === "buy"
+        ? `- ${i.name}: ${fmt(i.toBuy, i.unit)}`
+        : `- ${i.name}: ${fmt(i.need, i.unit)}`));
       lines.push("");
     });
     return lines.join("\n").trimEnd();
   }
 
   function renderShop() {
-    const rows = allItems().filter(i => i.toBuy > 0);
+    const buy = shopRows("buy");
+    const rows = shopRows(shopMode);
     const list = $("shopList");
     list.textContent = "";
-    $("shopCount").textContent = rows.length
-      ? `${rows.length} item${rows.length > 1 ? "s" : ""} to buy` : "Nothing to buy";
-    $("shopEmpty").hidden = rows.length > 0;
+    $("shopCount").textContent = shopMode === "buy"
+      ? (buy.length ? `${buy.length} item${buy.length > 1 ? "s" : ""} to buy` : "Nothing to buy")
+      : `${rows.length} ingredient${rows.length === 1 ? "" : "s"} for the week`;
+    $("shopEmpty").hidden = rows.length > 0 || shopMode !== "buy";
     CATEGORIES.forEach((c, ci) => {
-      const r = rows.filter(i => i.cat === ci).sort((a, b) => a.name.localeCompare(b.name));
+      const r = rows.filter(i => i.cat === ci);
       if (!r.length) return;
       list.append(el("h2", "cat", c));
       const ul = el("ul", "list");
       r.forEach(i => {
+        if (shopMode === "all") {
+          const li = el("li", "item shop-item");
+          const mid = el("div");
+          mid.append(el("div", "name", i.name), el("div", "sub", `Have ${fmt(i.have, i.unit)}${i.toBuy === 0 ? " · covered" : ""}`));
+          li.append(el("span"), mid, el("div", "qty", fmt(i.need, i.unit)));
+          ul.appendChild(li);
+          return;
+        }
         const li = el("li", "item shop-item");
         const lab = el("label", "got");
         const cb = el("input"); cb.type = "checkbox"; cb.dataset.act = "got"; cb.dataset.id = i.id;
@@ -609,7 +634,14 @@
       });
       list.appendChild(ul);
     });
+    document.querySelectorAll("[data-shopmode]").forEach(b =>
+      b.setAttribute("aria-pressed", String(b.dataset.shopmode === shopMode)));
   }
+
+  document.querySelectorAll("[data-shopmode]").forEach(b => b.addEventListener("click", () => {
+    shopMode = b.dataset.shopmode;
+    renderShop();
+  }));
 
   function refreshAll() {
     updateSummary();
@@ -701,7 +733,7 @@
       toast("Copy isn't available here. Select the list text and copy it.");
     }
   }
-  $("copyBtn").addEventListener("click", () => copyText(shopText(), "Shopping list copied"));
+  $("copyBtn").addEventListener("click", () => copyText(shopText(), shopMode === "buy" ? "To-buy list copied" : "General list copied"));
   if (navigator.share) {
     $("shareBtn").hidden = false;
     $("shareBtn").addEventListener("click", () => {
