@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home Hub</title>
+<style>
+  :root{
+    --bg:#f6f7f5; --panel:#ffffff; --ink:#1a2b22; --muted:#5f6f66;
+    --line:#e2e7e2; --accent:#1f7a4d; --accent-ink:#ffffff; --accent-soft:#e8f3ec;
+    --warn:#8a4b00; --warn-soft:#fdf1e0; --field:#f3f5f3; --shadow:0 1px 2px rgba(0,0,0,.05);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){--bg:#10140f; --panel:#181d16; --ink:#e8efe8; --muted:#93a396;
+      --line:#2a332a; --accent:#4fbb84; --accent-ink:#0b1510; --accent-soft:#16281d; --warn:#e0b060;
+      --warn-soft:#2a2215; --field:#10140f; --shadow:none; color-scheme: dark;}
+  }
+  :root[data-theme="dark"]{--bg:#10140f;--panel:#181d16;--ink:#e8efe8;--muted:#93a396;--line:#2a332a;
+    --accent:#4fbb84;--accent-ink:#0b1510;--accent-soft:#16281d;--warn:#e0b060;--warn-soft:#2a2215;--field:#10140f;--shadow:none;color-scheme: dark;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:0 max(16px, env(safe-area-inset-left, 0px)) 96px max(16px, env(safe-area-inset-right, 0px));}
+  button,input,select,textarea{font:inherit;color:inherit}
+  button{cursor:pointer;min-height:40px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 14px;white-space:nowrap}
+  button:hover{border-color:var(--accent)}
+  button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+  button.ghost{border-color:transparent;background:transparent;color:var(--accent);padding-left:8px;padding-right:8px}
+  button.danger{color:var(--warn)}
+  button:disabled{opacity:.5;cursor:default}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  [hidden]{display:none!important}
+  .ro [data-w]{display:none!important}
+
+  .wrap{max-width:720px;margin:0 auto}
+  header.top{padding-top:max(18px, env(safe-area-inset-top, 0px))}
+  h1{margin:0;font-size:22px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:13.5px;margin:2px 0 0}
+
+  .banner{margin:12px 0 0;background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:10px 14px;font-size:14px}
+  nav.tabs{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .tab{background:var(--panel);font-size:14px;padding:6px 4px;min-height:42px}
+  .tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+  .tab .n{display:inline-block;margin-left:4px;font-size:12px;background:var(--accent-soft);color:var(--ink);border-radius:999px;padding:0 6px}
+  .tab[aria-selected="true"] .n{background:rgba(255,255,255,.25);color:inherit}
+
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 10px;align-items:center;justify-content:space-between}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 6px}
+  .chip{min-height:34px;padding:4px 12px;border-radius:999px;font-size:14px}
+  .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+  h2.cat{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:20px 4px 8px;font-weight:600}
+  ul.list{list-style:none;margin:0;padding:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  li.item{padding:12px 14px;border-top:1px solid var(--line)}
+  li.item:first-child{border-top:0}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .grow{flex:1;min-width:0}
+  .name{font-weight:600;overflow-wrap:anywhere}
+  .meta{color:var(--muted);font-size:13px;margin-top:2px;overflow-wrap:anywhere}
+  .chip-s{font-size:12.5px;font-weight:600;white-space:nowrap;border-radius:999px;padding:2px 10px;background:var(--accent-soft);color:var(--accent)}
+  .chip-s.over{background:var(--warn-soft);color:var(--warn)}
+  .chip-s.due{background:var(--ink);color:var(--bg)}
+  .actions{display:flex;gap:6px;align-items:center;flex:none}
+  .actions button{min-height:36px;padding:6px 12px;font-size:14px}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+  .stat-big{font-size:20px;font-weight:700}
+  .bar{height:8px;background:var(--field);border-radius:999px;overflow:hidden;margin:8px 0 4px;border:1px solid var(--line)}
+  .bar > i{display:block;height:100%;background:var(--accent)}
+  .money-form{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .money-form input{flex:1 1 120px;min-height:40px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--field)}
+  .goal + .goal{margin-top:10px}
+  .empty{color:var(--muted);text-align:center;padding:24px 12px;background:var(--panel);border:1px dashed var(--line);border-radius:14px}
+  .stack{display:grid;gap:10px}
+
+  .setup{border:1px solid var(--accent);background:var(--accent-soft)}
+  .setup p{margin:0 0 10px}
+  .setup .row{flex-wrap:wrap}
+
+  .hc{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+  .hc:first-of-type{border-top:0}
+  .stepper{display:flex;align-items:center;gap:6px}
+  .stepper button{min-width:40px;padding:6px 0}
+  .stepper output{min-width:36px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+  .field{display:grid;gap:4px;margin-bottom:12px}
+  .field label{font-size:13px;color:var(--muted);font-weight:500}
+  .field input,.field select,.field textarea{min-height:42px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--field);color:var(--ink);width:100%}
+  .field textarea{min-height:70px}
+  .names{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .names .field{margin-bottom:0}
+
+  dialog{border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--ink);padding:0;width:min(440px,calc(100vw - 32px));box-shadow:0 20px 50px rgba(0,0,0,.25)}
+  dialog::backdrop{background:rgba(10,20,15,.45)}
+  .dlg{padding:18px}
+  .dlg h2{margin:0 0 12px;font-size:18px}
+  .err{color:var(--warn);font-size:13px;min-height:1.2em;margin:-4px 0 6px}
+  .dlg-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
+  .dlg-actions .grow{flex:1}
+  .note{color:var(--muted);font-size:13px;margin:14px 2px}
+
+  #toast{position:fixed;left:16px;right:16px;bottom:max(16px, env(safe-area-inset-bottom, 0px));max-width:520px;margin:0 auto;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:20;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  #toast button{background:transparent;border-color:transparent;color:var(--bg);text-decoration:underline;min-height:36px;padding:4px 8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Home Hub</h1>
+    <p class="sub">Chores, goals and dates for the two of you. Shared, so you both see the same thing.</p>
+  </header>
+
+  <div class="banner" id="banner" role="status" hidden></div>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" id="tab-today" aria-controls="panel-today" aria-selected="true" data-tab="today">Today<span class="n" id="todayBadge" hidden>0</span></button>
+    <button class="tab" role="tab" id="tab-chores" aria-controls="panel-chores" aria-selected="false" data-tab="chores">Chores</button>
+    <button class="tab" role="tab" id="tab-goals" aria-controls="panel-goals" aria-selected="false" data-tab="goals">Goals</button>
+    <button class="tab" role="tab" id="tab-dates" aria-controls="panel-dates" aria-selected="false" data-tab="dates">Dates</button>
+    <button class="tab" role="tab" id="tab-home" aria-controls="panel-home" aria-selected="false" data-tab="home">Home</button>
+  </nav>
+
+  <section id="panel-today" role="tabpanel" aria-labelledby="tab-today"><div id="today"></div></section>
+
+  <section id="panel-chores" role="tabpanel" aria-labelledby="tab-chores" hidden>
+    <div class="toolbar">
+      <div class="chips" role="group" aria-label="Filter chores" id="choreFilters">
+        <button class="chip" data-f="all" aria-pressed="true">All</button>
+        <button class="chip" data-f="mine" aria-pressed="false">Mine</button>
+        <button class="chip" data-f="theirs" aria-pressed="false">Partner</button>
+        <button class="chip" data-f="either" aria-pressed="false">Either</button>
+      </div>
+      <button class="primary" data-w data-act="new" data-kind="chores">+ Chore</button>
+    </div>
+    <div id="chores"></div>
+  </section>
+
+  <section id="panel-goals" role="tabpanel" aria-labelledby="tab-goals" hidden>
+    <div class="toolbar">
+      <span class="sub">Savings for the house</span>
+      <button class="primary" data-w data-act="new" data-kind="goals">+ Goal</button>
+    </div>
+    <div id="goals"></div>
+  </section>
+
+  <section id="panel-dates" role="tabpanel" aria-labelledby="tab-dates" hidden>
+    <div class="toolbar">
+      <span class="sub">Time we plan for each other</span>
+      <button class="primary" data-w data-act="new" data-kind="dates">+ Date</button>
+    </div>
+    <div id="dates"></div>
+  </section>
+
+  <section id="panel-home" role="tabpanel" aria-labelledby="tab-home" hidden>
+    <h2 class="cat">Who's in the house</h2>
+    <div class="card">
+      <form id="namesForm" data-w>
+        <div class="names">
+          <div class="field"><label for="nameA">Person A</label><input id="nameA" maxlength="30" autocomplete="off"></div>
+          <div class="field"><label for="nameB">Person B</label><input id="nameB" maxlength="30" autocomplete="off"></div>
+        </div>
+        <div class="dlg-actions" style="margin-top:10px"><button class="primary" type="submit">Save names</button></div>
+      </form>
+      <p class="meta" id="meLine" style="margin-top:12px"></p>
+      <div class="chips" style="margin-top:8px">
+        <button class="chip" data-w data-act="setSlot" data-slot="A">This device is A</button>
+        <button class="chip" data-w data-act="setSlot" data-slot="B">This device is B</button>
+      </div>
+    </div>
+
+    <h2 class="cat">Who's eating at home</h2>
+    <div class="card">
+      <p class="meta" style="margin:0 0 4px">Set how many people eat at home each day. Solo weeks use 1. Guests: raise that day.</p>
+      <div id="headcount"></div>
+      <div class="chips" style="margin-top:10px">
+        <button class="chip" data-w data-act="solo">One at home all week</button>
+        <button class="chip" data-w data-act="two">Both at home all week</button>
+      </div>
+      <p class="meta" id="hcSummary"></p>
+    </div>
+
+    <h2 class="cat" id="seedHead">Start here</h2>
+    <div class="card" id="seedCard">
+      <p class="meta" style="margin:0 0 10px">Add the usual house chores (plants, trash, bathroom, laundry, fridge and more). You can edit or delete any of them after.</p>
+      <button class="primary" data-w data-act="seed">Add common house chores</button>
+    </div>
+    <p class="note">Everything here is shared with anyone you give edit access to. Reminders for chores come in the next version.</p>
+  </section>
+</div>
+
+<div id="toast" role="status" hidden>
+  <span id="toastMsg"></span>
+  <button id="toastUndo" hidden>Undo</button>
+</div>
+
+<!-- Generic add / edit dialog -->
+<dialog id="editDlg" aria-labelledby="eTitle">
+  <form id="editForm" class="dlg" novalidate>
+    <h2 id="eTitle">Edit</h2>
+    <div id="eFields"></div>
+    <p class="err" id="eErr" role="alert"></p>
+    <div class="dlg-actions">
+      <button type="button" class="danger" id="eDelete" hidden>Delete</button>
+      <span class="grow"></span>
+      <button type="button" id="eCancel">Cancel</button>
+      <button type="submit" class="primary">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------- Constants ----------
+  const DAY_NAMES = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const DAY_MS = 86400000;
+  const DEFAULT_HEADCOUNT = 2;
+  const KINDS = ["Date night","Outing","Trip","Cook together","Surprise","Movie in","Walk","Other"];
+  const LABEL = { chores:"chore", goals:"goal", dates:"date" };
+
+  const DEFAULT_CHORES = [
+    { name:"Water the plants", everyDays:2, minutes:10 },
+    { name:"Take out the trash", everyDays:2, minutes:5 },
+    { name:"Clean the helmets", everyDays:14, minutes:15 },
+    { name:"Clean the cabinets", everyDays:30, minutes:60 },
+    { name:"Clean the fridge", everyDays:14, minutes:30 },
+    { name:"Tidy the fridge", everyDays:3, minutes:10 },
+    { name:"Bathroom clean-up ritual", everyDays:7, minutes:40 },
+    { name:"Laundry", everyDays:3, minutes:45 },
+    { name:"Make the bed", everyDays:1, minutes:3 },
+    { name:"Cook breakfast", everyDays:1, minutes:25 },
+    { name:"Grocery shopping", everyDays:7, minutes:60 },
+  ];
+
+  const SPEC = {
+    chores: [
+      { k:"name", label:"Chore", type:"text", req:true },
+      { k:"everyDays", label:"Every how many days", type:"number", min:1, def:1 },
+      { k:"minutes", label:"About how many minutes", type:"number", min:0, def:10 },
+      { k:"assignee", label:"Who usually does it", type:"select", def:"either", opts:() => [["A", nm("A")], ["B", nm("B")], ["either", "Either"]] },
+    ],
+    goals: [
+      { k:"name", label:"Goal", type:"text", req:true },
+      { k:"target", label:"Target (₹)", type:"number", min:1, req:true },
+      { k:"saved", label:"Saved so far (₹)", type:"number", min:0, def:0 },
+      { k:"deadline", label:"Deadline (optional)", type:"date" },
+    ],
+    dates: [
+      { k:"title", label:"What", type:"text", req:true },
+      { k:"when", label:"When", type:"date" },
+      { k:"kind", label:"Type", type:"select", def:"Date night", opts:() => KINDS.map(k => [k, k]) },
+      { k:"budget", label:"Budget (₹)", type:"number", min:0, def:0 },
+      { k:"status", label:"Status", type:"select", def:"planned", opts:() => [["idea","Idea"],["planned","Planned"],["done","Done"]] },
+      { k:"notes", label:"Notes", type:"textarea" },
+    ],
+  };
+
+  // ---------- Shared state ----------
+  const S = {
+    db: null, uid: null, writable: null,
+    chores: [], goals: [], dates: [],
+    people: { A: "", B: "" }, headcount: {},
+    profile: null,
+    loaded: {}, slow: {}, errors: {},
+    me: null,
+    banner: "",
+  };
+  function nm(slot) { return S.people[slot] || (slot === "A" ? "Person A" : "Person B"); }
+  const $ = id => document.getElementById(id);
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  const pad = n => String(n).padStart(2, "0");
+  const todayISO = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const startOfDay = t => { const d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); };
+  const todayStart = () => startOfDay(Date.now());
+  const uid = () => "x" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const money = n => "₹" + Math.round(Number(n) || 0).toLocaleString("en-IN");
+  const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+  const who = a => (a === "either" || !a) ? "Either" : nm(a);
+  const dateLabel = t => new Date(t).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+  const isoLabel = s => { if (!s) return "No date"; const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }); };
+
+  // ---------- Errors and toast ----------
+  function errMsg(code) {
+    switch (code) {
+      case "revoked":
+      case "invalid_argument": return "Couldn't save. You may have view-only access here.";
+      case "quota_exceeded": return "Storage is full. Delete something old, then try again.";
+      case "resource_exhausted": return "Too many changes at once. Wait a moment and try again.";
+      default: return "Couldn't save. Check your connection and try again.";
+    }
+  }
+  let toastTimer = null, undoFn = null;
+  function toast(msg, undo) {
+    $("toastMsg").textContent = msg;
+    $("toastUndo").hidden = !undo;
+    undoFn = undo || null;
+    $("toast").hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { $("toast").hidden = true; }, 6000);
+  }
+  $("toastUndo").addEventListener("click", async () => {
+    const f = undoFn; undoFn = null; $("toast").hidden = true;
+    if (f) await f();
+  });
+
+  // Serialize writes per document, so rapid clicks don't race.
+  const chains = {};
+  function serial(key, fn) {
+    const p = (chains[key] || Promise.resolve()).then(fn);
+    chains[key] = p.catch(() => {});
+    return p;
+  }
+  async function write(key, fn, okMsg) {
+    if (!S.db) { toast("Not connected. Nothing was saved."); return false; }
+    try {
+      await serial(key, fn);
+      if (okMsg) toast(okMsg);
+      return true;
+    } catch (e) {
+      toast(errMsg(e && e.code));
+      return false;
+    }
+  }
+
+  // ---------- Derived ----------
+  function status(c) {
+    if (!c.lastDone) return { k: "due", label: "Never done" };
+    const due = startOfDay(c.lastDone) + (c.everyDays || 1) * DAY_MS;
+    const days = Math.round((due - todayStart()) / DAY_MS);
+    if (days < 0) return { k: "over", label: `${plural(-days, "day")} overdue` };
+    if (days === 0) return { k: "due", label: "Due today" };
+    return { k: "ok", label: `Due in ${plural(days, "day")}` };
+  }
+  const dueTime = c => c.lastDone ? startOfDay(c.lastDone) + (c.everyDays || 1) * DAY_MS : 0;
+  const activeChores = () => S.chores.filter(c => c.active !== false);
+  const hc = day => (S.headcount[day] != null ? S.headcount[day] : DEFAULT_HEADCOUNT);
+  const weekTotal = () => DAY_NAMES.reduce((s, d) => s + hc(d), 0);
+
+  // ---------- Rendering ----------
+  function choreRow(c, showActions) {
+    const st = status(c);
+    const li = el("li", "item");
+    const r = el("div", "row");
+    const g = el("div", "grow");
+    g.append(el("div", "name", c.name));
+    const bits = [`${who(c.assignee)}`, `every ${plural(c.everyDays || 1, "day")}`];
+    if (c.minutes) bits.push(`~${c.minutes} min`);
+    if (c.lastDone) bits.push(`last by ${c.lastDoneBy && c.lastDoneBy !== "?" ? nm(c.lastDoneBy) : "someone"}, ${dateLabel(c.lastDone)}`);
+    g.append(el("div", "meta", bits.join(" · ")));
+    const right = el("div", "actions");
+    right.append(el("span", "chip-s " + st.k, st.label));
+    if (showActions) {
+      const d = el("button", "primary", "Done");
+      d.dataset.w = ""; d.dataset.act = "done"; d.dataset.id = c.id;
+      d.setAttribute("aria-label", `Mark ${c.name} done`);
+      right.append(d);
+    }
+    const e = el("button", "ghost", "Edit");
+    e.dataset.w = ""; e.dataset.act = "edit"; e.dataset.kind = "chores"; e.dataset.id = c.id;
+    e.setAttribute("aria-label", `Edit ${c.name}`);
+    right.append(e);
+    r.append(g, right);
+    li.append(r);
+    return li;
+  }
+
+  function renderToday() {
+    const box = $("today");
+    box.textContent = "";
+    if (S.uid && S.loaded.profile && !S.me) {
+      const card = el("div", "card setup");
+      card.append(el("p", "", "Which one of you is using this device?"));
+      const row = el("div", "row");
+      ["A", "B"].forEach(s => {
+        const b = el("button", "primary", nm(s));
+        b.dataset.w = ""; b.dataset.act = "setSlot"; b.dataset.slot = s;
+        row.append(b);
+      });
+      card.append(row);
+      box.append(card);
+    }
+    const due = activeChores().map(c => ({ c, st: status(c) }))
+      .filter(x => x.st.k !== "ok")
+      .sort((a, b) => (a.st.k === "over" ? 0 : 1) - (b.st.k === "over" ? 0 : 1) || a.c.name.localeCompare(b.c.name));
+    box.append(el("h2", "cat", `Due now · ${due.length}`));
+    if (!due.length) {
+      box.append(el("div", "empty", activeChores().length ? "Nothing due. Nice work." : "No chores yet. Add them on the Home tab."));
+    } else {
+      const groups = [["mine", "Yours", x => S.me && x.c.assignee === S.me], ["theirs", "Partner's", x => S.me && x.c.assignee && x.c.assignee !== "either" && x.c.assignee !== S.me], ["either", "Either", x => !S.me || x.c.assignee === "either" || !x.c.assignee]];
+      groups.forEach(([, label, pick]) => {
+        const rows = due.filter(pick);
+        if (!rows.length) return;
+        box.append(el("h2", "cat", `${label} · ${rows.length}`));
+        const ul = el("ul", "list");
+        rows.forEach(x => ul.append(choreRow(x.c, true)));
+        box.append(ul);
+      });
+    }
+
+    const nextDate = S.dates.filter(d => d.status !== "done" && d.when && d.when >= todayISO())
+      .sort((a, b) => a.when.localeCompare(b.when))[0];
+    box.append(el("h2", "cat", "Next date"));
+    const dc = el("div", "card");
+    if (nextDate) {
+      dc.append(el("div", "name", nextDate.title));
+      dc.append(el("div", "meta", `${isoLabel(nextDate.when)} · ${nextDate.kind || "Date"} · ${money(nextDate.budget)} budget`));
+    } else {
+      dc.append(el("div", "meta", "Nothing planned yet. Add a date from the Dates tab."));
+    }
+    box.append(dc);
+
+    box.append(el("h2", "cat", "Savings"));
+    const saved = S.goals.reduce((s, g) => s + (+g.saved || 0), 0);
+    const target = S.goals.reduce((s, g) => s + (+g.target || 0), 0);
+    const sc = el("div", "card");
+    sc.append(el("div", "stat-big", S.goals.length ? `${money(saved)} of ${money(target)}` : "No goals yet"));
+    sc.append(el("div", "meta", S.goals.length ? `${plural(S.goals.length, "goal")} in progress` : "Add a goal from the Goals tab."));
+    box.append(sc);
+
+    box.append(el("h2", "cat", "This week at home"));
+    const hcard = el("div", "card");
+    const avg = weekTotal() / 7;
+    hcard.append(el("div", "stat-big", `${avg.toFixed(1)} people on average`));
+    hcard.append(el("div", "meta", avg <= 1.01 ? "Solo week. Plans and groceries scale down." : "Set guests and solo days on the Home tab."));
+    box.append(hcard);
+
+    const badge = $("todayBadge");
+    badge.hidden = due.length === 0;
+    badge.textContent = due.length;
+  }
+
+  function filteredChores() {
+    const f = document.querySelector("#choreFilters [aria-pressed='true']").dataset.f;
+    return activeChores().filter(c => {
+      if (f === "all") return true;
+      if (f === "either") return c.assignee === "either" || !c.assignee;
+      if (f === "mine") return S.me && c.assignee === S.me;
+      if (f === "theirs") return S.me && c.assignee && c.assignee !== "either" && c.assignee !== S.me;
+      return true;
+    }).sort((a, b) => dueTime(a) - dueTime(b) || a.name.localeCompare(b.name));
+  }
+
+  function renderChores() {
+    const box = $("chores");
+    box.textContent = "";
+    const rows = filteredChores();
+    if (!rows.length) {
+      box.append(el("div", "empty", S.loaded.chores ? "No chores here. Add one, or use Start here on the Home tab." : "Loading…"));
+      return;
+    }
+    const ul = el("ul", "list");
+    rows.forEach(c => ul.append(choreRow(c, true)));
+    box.append(ul);
+  }
+
+  function renderGoals() {
+    const box = $("goals");
+    box.textContent = "";
+    if (!S.goals.length) { box.append(el("div", "empty", S.loaded.goals ? "No goals yet. Add one to start saving together." : "Loading…")); return; }
+    S.goals.forEach(g => {
+      const card = el("div", "card goal");
+      const top = el("div", "row");
+      top.append(el("div", "name grow", g.name));
+      const e = el("button", "ghost", "Edit");
+      e.dataset.w = ""; e.dataset.act = "edit"; e.dataset.kind = "goals"; e.dataset.id = g.id;
+      top.append(e);
+      card.append(top);
+      const target = +g.target || 0, saved = +g.saved || 0;
+      const pct = target ? Math.min(100, Math.round(saved / target * 100)) : 0;
+      card.append(el("div", "stat-big", `${money(saved)} of ${money(target)}`));
+      const bar = el("div", "bar"); const fill = el("i"); fill.style.width = pct + "%"; bar.append(fill);
+      bar.setAttribute("role", "progressbar"); bar.setAttribute("aria-valuenow", String(pct)); bar.setAttribute("aria-valuemin", "0"); bar.setAttribute("aria-valuemax", "100");
+      card.append(bar);
+      const left = Math.max(0, target - saved);
+      let line = `${pct}% · ${money(left)} to go`;
+      if (g.deadline) {
+        const [y, m, d] = g.deadline.split("-").map(Number);
+        const days = Math.round((new Date(y, m - 1, d).getTime() - todayStart()) / DAY_MS);
+        const months = Math.max(1, Math.ceil(days / 30));
+        line += days > 0 ? ` · ${money(left / months)} a month until ${isoLabel(g.deadline)}` : ` · deadline ${isoLabel(g.deadline)}`;
+      }
+      card.append(el("div", "meta", line));
+      if (left > 0) {
+        const f = el("form", "money-form"); f.dataset.form = "money"; f.dataset.id = g.id; f.dataset.w = "";
+        const amt = el("input"); amt.name = "amt"; amt.inputMode = "decimal"; amt.placeholder = "Add amount (₹)"; amt.setAttribute("aria-label", `Add money to ${g.name}`);
+        const b = el("button", "primary", "Add money"); b.type = "submit";
+        f.append(amt, b);
+        card.append(f);
+      } else {
+        card.append(el("div", "meta", "Goal reached."));
+      }
+      box.append(card);
+    });
+  }
+
+  function renderDates() {
+    const box = $("dates");
+    box.textContent = "";
+    if (!S.dates.length) { box.append(el("div", "empty", S.loaded.dates ? "No dates yet. Plan the next one." : "Loading…")); return; }
+    const today = todayISO();
+    const upcoming = S.dates.filter(d => d.status !== "done" && d.status !== "idea" && (!d.when || d.when >= today)).sort((a, b) => (a.when || "~").localeCompare(b.when || "~"));
+    const ideas = S.dates.filter(d => d.status === "idea");
+    const past = S.dates.filter(d => d.status === "done" || (d.status !== "idea" && d.when && d.when < today)).sort((a, b) => (b.when || "").localeCompare(a.when || ""));
+    const section = (title, rows) => {
+      if (!rows.length) return;
+      box.append(el("h2", "cat", `${title} · ${rows.length}`));
+      const ul = el("ul", "list");
+      rows.forEach(d => {
+        const li = el("li", "item");
+        const r = el("div", "row");
+        const g = el("div", "grow");
+        g.append(el("div", "name", d.title));
+        g.append(el("div", "meta", `${isoLabel(d.when)} · ${d.kind || "Date"} · ${money(d.budget)}${d.notes ? " · " + d.notes : ""}`));
+        const right = el("div", "actions");
+        if (d.status !== "done") {
+          const done = el("button", "", "Done");
+          done.dataset.w = ""; done.dataset.act = "dateStatus"; done.dataset.id = d.id; done.dataset.to = "done";
+          right.append(done);
+        }
+        if (d.status === "idea") {
+          const plan = el("button", "", "Plan it");
+          plan.dataset.w = ""; plan.dataset.act = "dateStatus"; plan.dataset.id = d.id; plan.dataset.to = "planned";
+          right.append(plan);
+        }
+        const e = el("button", "ghost", "Edit");
+        e.dataset.w = ""; e.dataset.act = "edit"; e.dataset.kind = "dates"; e.dataset.id = d.id;
+        right.append(e);
+        r.append(g, right);
+        li.append(r);
+        ul.append(li);
+      });
+      box.append(ul);
+    };
+    section("Upcoming", upcoming);
+    section("Ideas", ideas);
+    section("Done", past);
+  }
+
+  function renderHome() {
+    if (document.activeElement !== $("nameA")) $("nameA").value = S.people.A || "";
+    if (document.activeElement !== $("nameB")) $("nameB").value = S.people.B || "";
+    $("meLine").textContent = S.uid
+      ? (S.me ? `This device is ${nm(S.me)}.` : "This device isn't set up yet. Pick A or B on the Today tab.")
+      : "Your identity isn't available in this view, so 'Done by' won't show your name.";
+    const box = $("headcount");
+    box.textContent = "";
+    DAY_NAMES.forEach(d => {
+      const row = el("div", "hc");
+      row.append(el("div", "name", d));
+      const st = el("div", "stepper");
+      const minus = el("button", "", "−"); minus.dataset.w = ""; minus.dataset.act = "hc"; minus.dataset.day = d; minus.dataset.d = "-1";
+      minus.setAttribute("aria-label", `Fewer people on ${d}`);
+      const out = el("output", "", String(hc(d))); out.setAttribute("aria-label", `People on ${d}`);
+      const plus = el("button", "", "+"); plus.dataset.w = ""; plus.dataset.act = "hc"; plus.dataset.day = d; plus.dataset.d = "1";
+      plus.setAttribute("aria-label", `More people on ${d}`);
+      st.append(minus, out, plus);
+      row.append(st);
+      box.append(row);
+    });
+    const avg = weekTotal() / 7;
+    $("hcSummary").textContent = `${avg.toFixed(1)} people on average this week (${weekTotal()} person-days in total).`;
+    const showSeed = S.loaded.chores && activeChores().length === 0;
+    $("seedCard").hidden = !showSeed;
+    $("seedHead").hidden = !showSeed;
+  }
+
+  function updateBadges() {
+    const n = S.loaded.chores ? activeChores().filter(c => status(c).k !== "ok").length : 0;
+    $("todayBadge").hidden = n === 0;
+    $("todayBadge").textContent = n;
+  }
+
+  function render() {
+    document.body.classList.toggle("ro", S.writable === false);
+    const notes = [];
+    if (!S.db) notes.push("Shared storage isn't available in this view, so changes won't be saved here.");
+    if (S.writable === false) notes.push("You can view this, but not change it. Ask for edit access.");
+    if (S.loaded.chores === undefined && S.db) notes.push("");
+    const slow = Object.keys(S.slow).filter(k => S.slow[k]);
+    if (slow.length) notes.push("Can't reach saved data yet. It may be out of date.");
+    const msg = notes.filter(Boolean).join(" ");
+    $("banner").hidden = !msg;
+    $("banner").textContent = msg;
+    renderToday(); renderChores(); renderGoals(); renderDates(); renderHome(); updateBadges();
+  }
+
+  // ---------- Tabs ----------
+  function showTab(name) {
+    ["today","chores","goals","dates","home"].forEach(t => {
+      const on = t === name;
+      $("tab-" + t).setAttribute("aria-selected", String(on));
+      $("panel-" + t).hidden = !on;
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => showTab(b.dataset.tab)));
+  document.querySelectorAll("#choreFilters [data-f]").forEach(b => b.addEventListener("click", () => {
+    document.querySelectorAll("#choreFilters [data-f]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    renderChores();
+  }));
+
+  // ---------- Writes ----------
+  async function markDone(id) {
+    const c = S.chores.find(x => x.id === id);
+    if (!c) return;
+    const prev = { lastDone: c.lastDone || null, lastDoneBy: c.lastDoneBy || null };
+    const by = S.me || "?";
+    const ok = await write("chore:" + id, () => S.db.collection("chores").doc(id).update({ lastDone: Date.now(), lastDoneBy: by }));
+    if (ok) {
+      // Offer undo for accidental taps.
+      toast(`${c.name} done`, async () => {
+        await write("chore:" + id, () => S.db.collection("chores").doc(id).update(prev), `Undid ${c.name}`);
+      });
+    }
+  }
+
+  async function saveItem(kind, id, values, isNew) {
+    const ref = S.db.collection(kind).doc(id);
+    return write(kind + ":" + id, () => (isNew ? ref.set(values) : ref.update(values)), "Saved");
+  }
+
+  async function addMoney(id, amount) {
+    const g = S.goals.find(x => x.id === id);
+    if (!g) return;
+    const contributions = (g.contributions || []).slice(-49).concat({ amount, by: S.me || "?", at: Date.now() });
+    const saved = (+g.saved || 0) + amount;
+    const ok = await write("goal:" + id, () => S.db.collection("goals").doc(id).update({ saved, contributions }), `Added ${money(amount)} to ${g.name}`);
+    return ok;
+  }
+
+  async function setDateStatus(id, to) {
+    return write("date:" + id, () => S.db.collection("dates").doc(id).update({ status: to }), to === "done" ? "Marked done" : "Planned");
+  }
+
+  async function setHeadcount(day, delta) {
+    const cur = hc(day);
+    const next = Math.max(0, Math.min(9, cur + delta));
+    if (next === cur) return;
+    const days = Object.assign({}, S.headcount);
+    DAY_NAMES.forEach(d => { if (days[d] == null) days[d] = hc(d); });
+    days[day] = next;
+    S.headcount = days;
+    renderHome(); renderToday();
+    await write("headcount", () => S.db.doc("home/headcount").set({ days }));
+  }
+
+  async function setAllHeadcount(n) {
+    const days = {};
+    DAY_NAMES.forEach(d => { days[d] = n; });
+    S.headcount = days;
+    render();
+    await write("headcount", () => S.db.doc("home/headcount").set({ days }), n === 1 ? "One at home all week" : "Both at home all week");
+  }
+
+  async function seedChores() {
+    if (activeChores().length) return;
+    const jobs = DEFAULT_CHORES.map(c => ({
+      id: uid(),
+      data: Object.assign({ assignee: "either", active: true, lastDone: null, lastDoneBy: null, createdAt: Date.now() }, c),
+    }));
+    let ok = 0;
+    for (const j of jobs) {
+      if (await write("chores:" + j.id, () => S.db.collection("chores").doc(j.id).set(j.data))) ok++;
+    }
+    if (ok) toast(`Added ${ok} chores`);
+  }
+
+  // ---------- Edit dialog ----------
+  let editKind = null, editId = null;
+  function openEdit(kind, item) {
+    editKind = kind; editId = item ? item.id : null;
+    $("eTitle").textContent = (item ? "Edit " : "New ") + LABEL[kind];
+    $("eErr").textContent = "";
+    $("eDelete").hidden = !item;
+    const box = $("eFields");
+    box.textContent = "";
+    SPEC[kind].forEach(s => {
+      const wrap = el("div", "field");
+      const lab = el("label", "", s.label);
+      lab.htmlFor = "f_" + s.k;
+      let inp;
+      if (s.type === "select") {
+        inp = el("select");
+        s.opts().forEach(([v, t]) => { const o = el("option", "", t); o.value = v; inp.append(o); });
+      } else if (s.type === "textarea") {
+        inp = el("textarea");
+      } else {
+        inp = el("input");
+        inp.type = s.type;
+        if (s.type === "number") { inp.inputMode = "decimal"; if (s.min != null) inp.min = String(s.min); }
+        if (s.type === "text") inp.maxLength = 80;
+      }
+      inp.id = "f_" + s.k;
+      const v = item ? item[s.k] : s.def;
+      if (v != null) inp.value = String(v);
+      wrap.append(lab, inp);
+      box.append(wrap);
+    });
+    $("editDlg").showModal();
+    const first = box.querySelector("input,select,textarea");
+    if (first) first.focus();
+  }
+
+  $("eCancel").addEventListener("click", () => $("editDlg").close());
+  $("eDelete").addEventListener("click", async () => {
+    const kind = editKind, id = editId;
+    if (!id) return;
+    const item = S[kind].find(x => x.id === id);
+    if (!confirm(`Delete this ${LABEL[kind]}${item ? ": " + (item.name || item.title) : ""}?`)) return;
+    const ok = await write(kind + ":" + id, () => S.db.collection(kind).doc(id).delete(), "Deleted");
+    if (ok) $("editDlg").close();
+  });
+
+  $("editForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const err = msg => { $("eErr").textContent = msg; };
+    const vals = {};
+    for (const s of SPEC[editKind]) {
+      const inp = $("f_" + s.k);
+      let v = inp.value.trim();
+      if (s.type === "number") {
+        const n = v === "" ? (s.def != null ? s.def : 0) : Number(v);
+        if (!Number.isFinite(n) || n < (s.min != null ? s.min : 0)) return err(`${s.label}: enter a valid number.`);
+        v = n;
+      }
+      if (s.req && (v === "" || v == null)) return err(`${s.label} is required.`);
+      if (s.type === "date" && v === "") v = null;
+      vals[s.k] = v;
+    }
+    if (editKind === "chores") vals.everyDays = Math.max(1, Math.round(vals.everyDays));
+    const isNew = editId == null;
+    const id = isNew ? uid() : editId;
+    if (isNew) {
+      vals.createdAt = Date.now();
+      if (editKind === "chores") Object.assign(vals, { active: true, lastDone: null, lastDoneBy: null });
+      if (editKind === "goals") vals.contributions = [];
+    }
+    const ok = await saveItem(editKind, id, vals, isNew);
+    if (ok) $("editDlg").close();
+  });
+
+  // ---------- Events (delegated) ----------
+  document.body.addEventListener("click", async e => {
+    const b = e.target.closest("[data-act]");
+    if (!b || b.disabled) return;
+    const a = b.dataset.act;
+    if (a === "new") return openEdit(b.dataset.kind, null);
+    if (a === "edit") return openEdit(b.dataset.kind, S[b.dataset.kind].find(x => x.id === b.dataset.id) || null);
+    if (a === "done") return markDone(b.dataset.id);
+    if (a === "dateStatus") return setDateStatus(b.dataset.id, b.dataset.to);
+    if (a === "hc") return setHeadcount(b.dataset.day, +b.dataset.d);
+    if (a === "solo") return setAllHeadcount(1);
+    if (a === "two") return setAllHeadcount(DEFAULT_HEADCOUNT);
+    if (a === "seed") return seedChores();
+    if (a === "setSlot") return setSlot(b.dataset.slot);
+  });
+
+  document.body.addEventListener("submit", async e => {
+    const f = e.target;
+    if (f.dataset.form === "money") {
+      e.preventDefault();
+      const amt = Number(f.amt.value);
+      if (!(amt > 0)) { toast("Enter an amount above 0."); return; }
+      const ok = await addMoney(f.dataset.id, amt);
+      if (ok) f.amt.value = "";
+    }
+    if (f.id === "namesForm") {
+      e.preventDefault();
+      const A = $("nameA").value.trim() || "Person A";
+      const B = $("nameB").value.trim() || "Person B";
+      S.people = { A, B };
+      render();
+      await write("people", () => S.db.doc("home/people").set({ A, B }), "Names saved");
+    }
+  });
+
+  async function setSlot(slot) {
+    if (!S.uid) return;
+    S.me = slot;
+    render();
+    await write("profile", () => S.db.doc("data/users/" + S.uid + "/profile").set({ slot }), `This device is ${nm(slot)}`);
+  }
+
+  // ---------- Live data ----------
+  function listen(key, ref, map) {
+    const timer = setTimeout(() => { S.slow[key] = true; render(); }, 10000);
+    ref.onSnapshot(snap => {
+      clearTimeout(timer);
+      S.slow[key] = false;
+      S.loaded[key] = true;
+      map(snap);
+      render();
+    }, err => {
+      clearTimeout(timer);
+      S.errors[key] = err && err.code;
+      S.loaded[key] = true;
+      render();
+    });
+  }
+  const listOf = snap => snap.docs.filter(d => d.exists).map(d => Object.assign({ id: d.id }, d.data()));
+
+  async function init() {
+    const claude = window.claude;
+    const db = claude ? await claude.use("db") : null;
+    const user = claude ? await claude.use("user") : null;
+    S.db = db;
+    if (user) {
+      try { S.uid = await user.id(); } catch (e) { S.uid = null; }
+      try { S.writable = await user.can("data.write"); } catch (e) { S.writable = null; }
+    }
+    render();
+    if (!db) return;
+
+    listen("chores", db.collection("chores"), snap => { S.chores = listOf(snap); });
+    listen("goals", db.collection("goals"), snap => { S.goals = listOf(snap); });
+    listen("dates", db.collection("dates"), snap => { S.dates = listOf(snap); });
+    listen("people", db.doc("home/people"), snap => {
+      const d = snap.exists ? snap.data() : {};
+      S.people = { A: d.A || "", B: d.B || "" };
+    });
+    listen("headcount", db.doc("home/headcount"), snap => {
+      const d = snap.exists ? snap.data() : {};
+      S.headcount = d.days || {};
+    });
+    if (S.uid) {
+      listen("profile", db.doc("data/users/" + S.uid + "/profile"), snap => {
+        const d = snap.exists ? snap.data() : {};
+        S.profile = d;
+        S.me = d.slot || null;
+      });
+    } else {
+      S.loaded.profile = true;
+    }
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
